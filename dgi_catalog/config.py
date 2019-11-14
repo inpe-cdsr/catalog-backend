@@ -33,9 +33,9 @@ class TestingConfig(Config):
 
 
 CONFIG = {
-    "DevelopmentConfig": DevelopmentConfig(),
-    "ProductionConfig": ProductionConfig(),
-    "TestingConfig": TestingConfig()
+    "development": DevelopmentConfig(),
+    "production": ProductionConfig(),
+    "test": TestingConfig()
 }
 
 

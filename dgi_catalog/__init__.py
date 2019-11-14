@@ -7,6 +7,9 @@ from dgi_catalog.blueprint import blueprint
 from dgi_catalog.config import get_settings
 
 
+ENV = os.environ.get('ENV', 'development')
+
+
 def create_app(config):
     """
     Args:
@@ -26,6 +29,9 @@ def create_app(config):
     return internal_app
 
 
-app = create_app(get_settings(os.environ.get('ENVIRONMENT', 'DevelopmentConfig')))
+app = create_app(get_settings(ENV))
+
+# debug mode if ENV == 'development'
+app.debug = True if ENV == 'development' else False
 
 CORS(app, resorces={r'/d/*': {"origins": '*'}})

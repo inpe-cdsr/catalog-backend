@@ -1,6 +1,8 @@
-"""Controllers
 """
-import json
+    Controllers
+"""
+
+from json import dumps
 from flask import request
 from werkzeug.exceptions import BadRequest, InternalServerError
 from bdc_core.utils.flask import APIResource
@@ -9,7 +11,9 @@ from dgi_catalog.auth import ns
 from dgi_catalog.auth.business import AuthBusiness
 from dgi_catalog.auth.parsers import validate
 
+
 api = ns
+
 
 @api.route('/login')
 class Login(APIResource):
@@ -19,9 +23,12 @@ class Login(APIResource):
         Logging into the system
         """
 
-        data, status = validate(request.json, 'login')
+        # body is a dict
+        body = request.json
+
+        data, status = validate(body, 'login')
         if status is False:
-            raise BadRequest(json.dumps(data))
+            raise BadRequest(dumps(data))
 
         auth = AuthBusiness.login(data['username'], data['password'])
         if not auth:

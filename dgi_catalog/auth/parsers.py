@@ -15,9 +15,8 @@ def validate(data, type_schema):
     schema = eval('{}()'.format(type_schema))
 
     v = Validator(schema)
-    data_json = data.to_dict()
 
-    if not v.validate(data_json):
+    if not v.validate(data):
         return v.errors, False
 
     return data, True
