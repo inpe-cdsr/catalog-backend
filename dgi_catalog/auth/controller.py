@@ -2,7 +2,7 @@
 """
 import json
 from flask import request
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 from bdc_core.utils.flask import APIResource
 
 from dgi_catalog.auth import ns
@@ -16,8 +16,9 @@ class Login(APIResource):
 
     def post(self):
         """
-        Logging in to the system
+        Logging into the system
         """
+
         data, status = validate(request.json, 'login')
         if status is False:
             raise BadRequest(json.dumps(data))
@@ -27,4 +28,3 @@ class Login(APIResource):
             raise InternalServerError('Error logging!')
 
         return auth
-

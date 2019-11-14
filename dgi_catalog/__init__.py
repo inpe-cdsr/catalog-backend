@@ -26,7 +26,6 @@ def create_app(config):
     return internal_app
 
 
-app = create_app(
-    get_settings(os.environ.get('ENVIRONMENT', 'DevelopmentConfig')))
+app = create_app(get_settings(os.environ.get('ENVIRONMENT', 'DevelopmentConfig')))
 
 CORS(app, resorces={r'/d/*': {"origins": '*'}})
