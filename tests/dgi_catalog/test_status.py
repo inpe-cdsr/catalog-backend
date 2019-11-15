@@ -15,7 +15,7 @@ from unittest import TestCase
 app = dgi_catalog_app.test_client()
 
 
-class TestStatus(TestCase):
+class TestCatalogStatus(TestCase):
     # def setUp(self):
     #     self.response = app.get('/wtss/list_coverages')
 

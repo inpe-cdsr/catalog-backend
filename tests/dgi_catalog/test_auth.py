@@ -11,18 +11,27 @@ from dgi_catalog import app as dgi_catalog_app
 app = dgi_catalog_app.test_client()
 
 
-class TestAuth(TestCase):
-    """TestAuth"""
+class TestCatalogAuthLogin(TestCase):
+    """TestCatalogAuthLogin"""
 
-    # def setUp(self):
-    #     self.response = app.get('/wtss/list_coverages')
+    url = '/catalog/auth/login'
 
-    def test_post__catalog_auth_login__body_is_empty(self):
-        """TestAuth.test_example"""
+    def test__post__catalog_auth_login__body_is_empty(self):
+        """TestAuth.test__post__catalog_auth_login__body_is_empty"""
 
-        response = app.post('/catalog/auth/login')
+        response = app.post(self.url)
 
         body = loads(response.data.decode('utf-8'))
 
         self.assertEqual(400, response.status_code)
         self.assertEqual(body['message'], 'Body is empty.')
+
+    # def test__post__catalog_auth_login__(self):
+    #     """TestAuth.test_example"""
+
+    #     response = app.post(self.url)
+
+    #     body = loads(response.data.decode('utf-8'))
+
+    #     self.assertEqual(400, response.status_code)
+    #     self.assertEqual(body['message'], 'Body is empty.')

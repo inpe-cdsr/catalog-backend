@@ -1,5 +1,5 @@
 """
-    Validator
+Validator
 """
 
 from cerberus import Validator
