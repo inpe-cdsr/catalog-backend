@@ -1,8 +1,10 @@
+"""Manage"""
+
 import contextlib
 import os
-from pathlib import Path
-from dgi_catalog import app
+# from pathlib import Path
 from flask_script import Manager
+from dgi_catalog import app
 
 
 manager = Manager(app)
