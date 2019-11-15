@@ -58,7 +58,7 @@ def test():
                  "html",
                  "--cov-report",
                  "annotate",
-                 "--cov=bdc_eocubes",
+                 "--cov=dgi_catalog",
                  "-s",
                  "tests/"])
 

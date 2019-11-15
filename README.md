@@ -36,12 +36,23 @@ pip install -r requirements.txt
 
 ## Running
 
-Run the server application by activating environment variables and pyenv. After that run manage.py file:
+Activating environment variables and pyenv.
 
 ```
 source environment.env
 pyenv activate dgi_catalog_backend
+```
+
+Run manage.py file using in production or development mode:
+
+```
 python manage.py run
+```
+
+Run manage.py file using in test mode:
+
+```
+python manage.py test
 ```
 
 

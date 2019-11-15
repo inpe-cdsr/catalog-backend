@@ -30,6 +30,7 @@ def create_app(config):
     return internal_app
 
 
+# get environment variables
 ENV = os_environ.get('ENV', 'development')
 
 # create Flask app
@@ -39,13 +40,17 @@ app = create_app(get_settings(ENV))
 app.debug = True if ENV == 'development' else False
 # app.debug = False
 
+# activate CORS
 CORS(app, resorces={r'/d/*': {"origins": '*'}})
 
 # create Flask logger
 logger = create_logger(app)
 logger.setLevel(logging.INFO)
 
+# print environment variables
 logger.info('ENV: %s', ENV)
-# logger.warning('>>> 1 warning: %s', ENV)
-# logger.error('>>> 1 error: %s', ENV)
-# logger.critical('>>> 1 critical: %s', ENV)
+
+# other types of messages
+# logger.warning('warning: %s', ENV)
+# logger.error('error: %s', ENV)
+# logger.critical('critical: %s', ENV)
