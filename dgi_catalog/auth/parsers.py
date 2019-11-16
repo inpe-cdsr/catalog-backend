@@ -14,9 +14,6 @@ def login():
 
 
 def validate(data, type_schema):
-    if data is None:
-        raise BadRequest('Body is empty.')
-
     schema = eval('{}()'.format(type_schema))
 
     v = Validator(schema)

@@ -1,3 +1,6 @@
+# disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
+# pylint: disable=C0301
+
 """
 test_auth.py file
 """
@@ -16,22 +19,43 @@ class TestCatalogAuthLogin(TestCase):
 
     url = '/catalog/auth/login'
 
-    def test__post__catalog_auth_login__body_is_empty(self):
-        """TestAuth.test__post__catalog_auth_login__body_is_empty"""
+    def test__post__catalog_auth_login__request_data_is_empty(self):
+        """
+        TestCatalogAuthLogin.test__post__catalog_auth_login__request_data_is_empty
+        """
 
         response = app.post(self.url)
 
         body = loads(response.data.decode('utf-8'))
 
         self.assertEqual(400, response.status_code)
-        self.assertEqual(body['message'], 'Body is empty.')
+        self.assertEqual(body['message'], 'Request data is empty.')
 
-    # def test__post__catalog_auth_login__(self):
-    #     """TestAuth.test_example"""
+    def test__post__catalog_auth_login__required_field(self):
+        """
+        TestCatalogAuthLogin.test__post__catalog_auth_login__required_field
+        """
 
-    #     response = app.post(self.url)
+        test_cases = [
+            {
+                # when I send this request body to the server, [...]
+                'body': b'{"username": "test"}',
+                # [...] an 'error_message' should go back
+                'error_message': '{"password": ["required field"]}'
+            },
+            {
+                # when I send this request body to the server, [...]
+                'body': b'{"password": "test"}',
+                # [...] an 'error_message' should go back
+                'error_message': '{"username": ["required field"]}'
+            }
+        ]
 
-    #     body = loads(response.data.decode('utf-8'))
+        for case in test_cases:
+            response = app.post(self.url, data=case['body'])
 
-    #     self.assertEqual(400, response.status_code)
-    #     self.assertEqual(body['message'], 'Body is empty.')
+            # response.data is bytes, then convert it to dict
+            body = loads(response.data.decode('utf-8'))
+
+            self.assertEqual(400, response.status_code)
+            self.assertEqual(body['message'], case['error_message'])

@@ -2,7 +2,7 @@
 Controllers
 """
 
-from json import dumps
+from json import loads, dumps
 from flask import request
 from werkzeug.exceptions import BadRequest, InternalServerError
 from bdc_core.utils.flask import APIResource
@@ -24,8 +24,13 @@ class Login(APIResource):
         Logging into the system
         """
 
-        # body is a dict
-        body = request.json
+        body = request.data
+
+        if body == b'':
+            raise BadRequest('Request data is empty.')
+
+        # get request data (bytes) and convert it to dict
+        body = loads(body.decode('utf-8'))
 
         # validate request body
         data, status = validate(body, 'login')
