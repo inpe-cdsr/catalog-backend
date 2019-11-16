@@ -14,17 +14,36 @@ from dgi_catalog import app as dgi_catalog_app
 app = dgi_catalog_app.test_client()
 
 
-class TestCatalogAuthLogin(TestCase):
-    """TestCatalogAuthLogin"""
+URL = '/catalog/auth/login'
 
-    url = '/catalog/auth/login'
+'''
+class TestCatalogAuthLoginSuccess(TestCase):
+    """TestCatalogAuthLoginSuccess"""
+
+    def test__post__catalog_auth_login(self):
+        """
+        TestCatalogAuthLoginSuccess.test__post__catalog_auth_login
+        """
+
+        body = b'{"username": "test", "password": "test"}'
+
+        response = app.post(URL, data=body)
+
+        # body = loads(response.data.decode('utf-8'))
+
+        self.assertEqual(200, response.status_code)
+        # self.assertEqual(body['message'], 'Request data is empty.')
+'''
+
+class TestCatalogAuthLoginError(TestCase):
+    """TestCatalogAuthLoginError"""
 
     def test__post__catalog_auth_login__request_data_is_empty(self):
         """
-        TestCatalogAuthLogin.test__post__catalog_auth_login__request_data_is_empty
+        TestCatalogAuthLoginError.test__post__catalog_auth_login__request_data_is_empty
         """
 
-        response = app.post(self.url)
+        response = app.post(URL)
 
         body = loads(response.data.decode('utf-8'))
 
@@ -33,7 +52,7 @@ class TestCatalogAuthLogin(TestCase):
 
     def test__post__catalog_auth_login__required_field(self):
         """
-        TestCatalogAuthLogin.test__post__catalog_auth_login__required_field
+        TestCatalogAuthLoginError.test__post__catalog_auth_login__required_field
         """
 
         test_cases = [
@@ -52,7 +71,7 @@ class TestCatalogAuthLogin(TestCase):
         ]
 
         for case in test_cases:
-            response = app.post(self.url, data=case['body'])
+            response = app.post(URL, data=case['body'])
 
             # response.data is bytes, then convert it to dict
             body = loads(response.data.decode('utf-8'))
