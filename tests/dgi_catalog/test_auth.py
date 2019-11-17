@@ -13,12 +13,13 @@ from dgi_catalog import app as dgi_catalog_app
 
 app = dgi_catalog_app.test_client()
 
-
 URL = '/catalog/auth/login'
 
 '''
 class TestCatalogAuthLoginSuccess(TestCase):
-    """TestCatalogAuthLoginSuccess"""
+    """
+    TestCatalogAuthLoginSuccess
+    """
 
     def test__post__catalog_auth_login(self):
         """
@@ -36,7 +37,9 @@ class TestCatalogAuthLoginSuccess(TestCase):
 '''
 
 class TestCatalogAuthLoginError(TestCase):
-    """TestCatalogAuthLoginError"""
+    """
+    TestCatalogAuthLoginError
+    """
 
     def test__post__catalog_auth_login__request_data_is_empty(self):
         """

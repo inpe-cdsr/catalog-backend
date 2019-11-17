@@ -1,3 +1,6 @@
+# disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
+# pylint: disable=C0301
+
 """
 Controllers
 """
@@ -15,13 +18,28 @@ from dgi_catalog.auth.parsers import validate
 api = ns
 
 
-# Full route: /catalog/auth/login
 @api.route('/login')
 class Login(APIResource):
+    """
+    Login
+    Full route: /catalog/auth/login
+    """
 
     def post(self):
         """
-        Logging into the system
+        Logs a user into the system
+
+        Request Parameters
+        ----------
+        request.data : bytes
+            JSON in bytes format that contains username and password information of a user
+            Example: b'{"username": "test", "password": "test"}'
+
+        Returns
+        -------
+        boolean
+            True, if user is valid
+            False, if user is not valid
         """
 
         body = request.data
