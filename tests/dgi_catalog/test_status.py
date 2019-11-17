@@ -10,7 +10,7 @@ from dgi_catalog import app as dgi_catalog_app
 
 app = dgi_catalog_app.test_client()
 
-URL = '/catalog/status'
+URL = '/catalog/status/'
 
 '''
 class TestCatalogStatusSuccess(TestCase):
@@ -27,7 +27,7 @@ class TestCatalogStatusSuccess(TestCase):
         "base": "http://localhost:5000/catalog", \
         "description": "API - DGI Catalog (http://localhost:5000)"}'
 
-        response = app.post(URL)
+        response = app.get(URL)
 
         body = loads(response.data.decode('utf-8'))
 

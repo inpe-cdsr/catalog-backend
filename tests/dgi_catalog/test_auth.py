@@ -36,6 +36,7 @@ class TestCatalogAuthLoginSuccess(TestCase):
         # self.assertEqual(body['message'], 'Request data is empty.')
 '''
 
+
 class TestCatalogAuthLoginError(TestCase):
     """
     TestCatalogAuthLoginError
