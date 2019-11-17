@@ -5,8 +5,8 @@
 test_auth.py file
 """
 
-from json import loads
 from unittest import TestCase
+from json import loads
 
 from dgi_catalog import app as dgi_catalog_app
 
@@ -51,7 +51,7 @@ class TestCatalogAuthLoginError(TestCase):
         body = loads(response.data.decode('utf-8'))
 
         self.assertEqual(400, response.status_code)
-        self.assertEqual(body['message'], 'Request data is empty.')
+        self.assertEqual('Request data is empty.', body['message'])
 
     def test__post__catalog_auth_login__required_field(self):
         """
@@ -63,13 +63,13 @@ class TestCatalogAuthLoginError(TestCase):
                 # when I send this request body to the server, [...]
                 'body': b'{"username": "test"}',
                 # [...] an 'error_message' should go back
-                'error_message': '{"password": ["required field"]}'
+                'expected': '{"password": ["required field"]}'
             },
             {
                 # when I send this request body to the server, [...]
                 'body': b'{"password": "test"}',
                 # [...] an 'error_message' should go back
-                'error_message': '{"username": ["required field"]}'
+                'expected': '{"username": ["required field"]}'
             }
         ]
 
@@ -80,4 +80,4 @@ class TestCatalogAuthLoginError(TestCase):
             body = loads(response.data.decode('utf-8'))
 
             self.assertEqual(400, response.status_code)
-            self.assertEqual(body['message'], case['error_message'])
+            self.assertEqual(case['expected'], body['message'])
