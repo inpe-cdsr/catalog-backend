@@ -3,7 +3,6 @@ Validator
 """
 
 from cerberus import Validator
-from werkzeug.exceptions import BadRequest
 
 
 def login():

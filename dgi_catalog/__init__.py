@@ -1,6 +1,7 @@
 """DGI Catalog"""
 
-from os import environ as os_environ
+from .environment import ENV, MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
+                         MYSQL_DB_HOST, MYSQL_DB_DATABASE
 
 from flask import Flask
 from flask.logging import create_logger, logging
@@ -29,9 +30,6 @@ def create_app(config):
 
     return internal_app
 
-
-# get environment variables
-ENV = os_environ.get('ENV', 'development')
 
 # create Flask app
 app = create_app(get_settings(ENV))

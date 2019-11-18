@@ -17,6 +17,8 @@ from dgi_catalog.auth.parsers import validate
 
 api = ns
 
+auth_business = AuthBusiness()
+
 
 @api.route('/login')
 class Login(APIResource):
@@ -57,7 +59,7 @@ class Login(APIResource):
             raise BadRequest(dumps(data))
 
         # validate user login
-        auth = AuthBusiness.login(data['username'], data['password'])
+        auth = auth_business.login(data['username'], data['password'])
 
         if not auth:
             raise InternalServerError('Error logging!')

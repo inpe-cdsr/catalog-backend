@@ -39,19 +39,20 @@ pip install -r requirements.txt
 Activating environment variables and pyenv.
 
 ```
-source environment.env
 pyenv activate dgi_catalog_backend
 ```
 
 Run manage.py file using in production or development mode:
 
 ```
+source environment.production.env
 python manage.py run
 ```
 
 Run manage.py file using in test mode:
 
 ```
+source environment.development.env
 python manage.py test
 ```
 
