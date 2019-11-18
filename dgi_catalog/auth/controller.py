@@ -61,9 +61,10 @@ class Login(APIResource):
             raise BadRequest(dumps(data))
 
         # validate user login
-        auth = auth_business.login(data['email'], data['password'])
+        encoded_token = auth_business.login(data['email'], data['password'])
 
-        if not auth:
+        # if there is not a token (i.e. empty string), then raise an error
+        if not encoded_token:
             raise InternalServerError('Error logging!')
 
-        return auth
+        return encoded_token

@@ -3,10 +3,19 @@ DGI Catalog
 """
 
 from mysql.connector import connect, errorcode, Error
+from datetime import date, datetime
 
 from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
                                     MYSQL_DB_HOST, MYSQL_DB_DATABASE
 
+def fix_rows(rows):
+    for row in rows:
+        for key in row:
+            # datetime/date is not serializable by default, then get a serializable string representation
+            if isinstance(row[key], (datetime, date)):
+                row[key] = row[key].isoformat()
+
+    return rows
 
 class DatabaseConnection():
     # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
@@ -40,10 +49,17 @@ class DatabaseConnection():
 
     def execute(self, query, params=None):
         self.connect()
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor(dictionary=True)
+
+        result = None
 
         try:
-            result = cursor.execute(query, params=params)
+            cursor.execute(query, params=params)
+
+            # if there are rows, then return them
+            if cursor.with_rows:
+                result = cursor.fetchall()
+
         except Error as err:
             print('An error occurred during query execution: %s', err)
 
@@ -52,29 +68,23 @@ class DatabaseConnection():
 
         return result
 
-    def select_user(self, username=None, password=None):
+    def select_user(self, email=None, password=None):
         # Sources:
         # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
         # https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
 
         query = '''
             SELECT * FROM User
-            WHERE username=%(username)s AND password=%(password)s
+            WHERE email=%(email)s AND password=%(password)s
         '''
 
-        params = { 'username': username, 'password': password }
+        params = { 'email': email, 'password': password }
 
-        result = self.execute(query, params)
+        # execute the query and fix the resulted rows
+        rows = self.execute(query, params)
+        rows = fix_rows(rows)
 
-        print('dir result: %s', dir(result))
-        print('query result: %s', result)
-        # print('query result: ', result)
-
-        if result.with_rows:
-            rows = result.fetchall()
-            print('rows: %s', rows)
-
-        return result
+        return rows
 
     # def insert/update/delete_user(self, username=None, password=None):
     #     # example of how to insert/update/delete records

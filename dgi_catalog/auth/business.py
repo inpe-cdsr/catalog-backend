@@ -10,12 +10,11 @@ class AuthBusiness():
     def __init__(self):
         self.db_connection = DatabaseConnection()
 
-    def login(self, username, password):
-        print('\nusername: ', username)
-        print('password: ', password)
+    def login(self, email, password):
+        # print('\n\n login()')
 
-        # result = self.db_connection.select_user(username=username, password=password)
+        result = self.db_connection.select_user(email=email, password=password)
 
-        # encoded_token = jwt_encode(result)
+        encoded_token = jwt_encode(result[0])
 
-        return True
+        return encoded_token

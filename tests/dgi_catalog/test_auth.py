@@ -16,7 +16,7 @@ app = dgi_catalog_app.test_client()
 
 URL = '/catalog/auth/login'
 
-'''
+
 class TestCatalogAuthLoginSuccess(TestCase):
     """
     TestCatalogAuthLoginSuccess
@@ -31,11 +31,9 @@ class TestCatalogAuthLoginSuccess(TestCase):
 
         response = app.post(URL, data=dumps(body))
 
-        # print('\nresponse.data: ', response.data)
-
         self.assertEqual(200, response.status_code)
-        self.assertTrue(loads(response.data))
-'''
+        # check if a non-empty string has been returned (i.e. a token has been returned)
+        self.assertNotEqual('', loads(response.data))
 
 
 class TestCatalogAuthLoginError(TestCase):
