@@ -63,13 +63,13 @@ class TestCatalogAuthLoginError(TestCase):
                 # when I send this request body to the server, [...]
                 'body': b'{"email": "test"}',
                 # [...] an 'error_message' should go back
-                'expected': '{"password": ["required field"]}'
+                'expected': {"password": ["required field"]}
             },
             {
                 # when I send this request body to the server, [...]
                 'body': b'{"password": "test"}',
                 # [...] an 'error_message' should go back
-                'expected': '{"email": ["required field"]}'
+                'expected': {"email": ["required field"]}
             }
         ]
 

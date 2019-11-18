@@ -58,7 +58,7 @@ class Login(APIResource):
         data, status = validate(body, 'login')
 
         if status is False:
-            raise BadRequest(dumps(data))
+            raise BadRequest(data)
 
         # validate user login
         encoded_token = auth_business.login(data['email'], data['password'])
