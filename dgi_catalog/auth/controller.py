@@ -46,6 +46,8 @@ class Login(APIResource):
 
         body = request.data
 
+        # print('\n\n body: ', body)
+
         if body == b'':
             raise BadRequest('Request data is empty.')
 
@@ -59,7 +61,7 @@ class Login(APIResource):
             raise BadRequest(dumps(data))
 
         # validate user login
-        auth = auth_business.login(data['username'], data['password'])
+        auth = auth_business.login(data['email'], data['password'])
 
         if not auth:
             raise InternalServerError('Error logging!')

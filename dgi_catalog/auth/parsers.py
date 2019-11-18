@@ -7,7 +7,7 @@ from cerberus import Validator
 
 def login():
     return {
-        'username': {"type": "string", "empty": False, "required": True},
+        'email': {"type": "string", "empty": False, "required": True},
         'password': {"type": "string", "empty": False, "required": True}
     }
 
