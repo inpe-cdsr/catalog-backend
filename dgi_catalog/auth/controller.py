@@ -65,6 +65,6 @@ class Login(APIResource):
 
         # if there is not a token (i.e. empty string), then raise an error
         if not encoded_token:
-            raise InternalServerError('Error logging!')
+            raise InternalServerError('Error during login.')
 
         return encoded_token
