@@ -77,21 +77,32 @@ class TestCatalogAuthLoginError(TestCase):
             response = app.post(URL, data=case['body'])
 
             # response.data is bytes, then convert it to dict
-            body = loads(response.data.decode('utf-8'))
+            result = loads(response.data.decode('utf-8'))
 
             self.assertEqual(400, response.status_code)
-            self.assertEqual(case['expected'], body['message'])
+            self.assertEqual(case['expected'], result['message'])
 
     def test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found(self):
         """
         TestCatalogAuthLoginError.test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found
         """
 
-        body = { 'email': 'invalid@email.com', 'password': 'invalid_password' }
+        test_cases = [
+            {
+                'body': { 'email': 'invalid@email.com', 'password': 'invalid_password' }
+            },
+            {
+                'body': { 'email': TEST_USER_EMAIL, 'password': 'invalid_password' }
+            },
+            {
+                'body': { 'email': 'invalid@email.com', 'password': TEST_USER_PASSWORD }
+            }
+        ]
 
-        response = app.post(URL, data=dumps(body))
+        for case in test_cases:
+            response = app.post(URL, data=dumps(case['body']))
 
-        body = loads(response.data)
+            result = loads(response.data)
 
-        self.assertEqual(404, response.status_code)
-        self.assertEqual('E-mail or Password was not found.', body['message'])
+            self.assertEqual(404, response.status_code)
+            self.assertEqual('E-mail or Password was not found.', result['message'])
