@@ -1,15 +1,10 @@
 # pylint: disable-msg=C0103
 # from werkzeug.exceptions import BadRequest
 
-from dgi_catalog import app as dgi_catalog_app
-# from bdc_wtss.schemas import coverage_list_response, \
-#                              describe_coverage_response, \
-#                              time_series_response
-
-# from json import loads as json_loads
-# from jsonschema import validate
-
 from unittest import TestCase
+# from json import loads, dumps
+
+from dgi_catalog import app as dgi_catalog_app
 
 
 app = dgi_catalog_app.test_client()

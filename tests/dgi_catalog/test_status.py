@@ -3,7 +3,7 @@
 # pylint: disable-msg=C0103
 
 from unittest import TestCase
-from json import loads
+# from json import loads, dumps
 
 from dgi_catalog import app as dgi_catalog_app
 

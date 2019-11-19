@@ -9,6 +9,7 @@ from unittest import TestCase
 from json import loads, dumps
 
 from dgi_catalog import app as dgi_catalog_app
+
 from test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 

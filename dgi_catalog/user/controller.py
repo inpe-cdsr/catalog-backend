@@ -7,29 +7,29 @@ Controllers
 
 from json import loads, dumps
 from flask import request
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from bdc_core.utils.flask import APIResource
 
-from dgi_catalog.auth import ns
-from dgi_catalog.auth.business import AuthBusiness
-from dgi_catalog.auth.parsers import validate
+from dgi_catalog.user import ns
+from dgi_catalog.user.business import UserBusiness
+from dgi_catalog.user.parsers import validate, INSERT_USER_SCHEMA
 
 
 api = ns
 
-auth_business = AuthBusiness()
+user_business = UserBusiness()
 
 
-@api.route('/login')
-class Login(APIResource):
+@api.route('/')
+class User(APIResource):
     """
-    Login
-    Full route: /catalog/auth/login
+    User
+    Full route: /catalog/user/
     """
 
     def post(self):
         """
-        Logs a user into the system
+        Creates a user into the system
 
         Request Parameters
         ----------
@@ -39,13 +39,11 @@ class Login(APIResource):
 
         Returns
         -------
-        string
-            Token related to the logged user
+        boolean
+            -
         """
 
         body = request.data
-
-        # print('\n\n body: ', body)
 
         if body == b'':
             raise BadRequest('Request data is empty.')
@@ -54,16 +52,16 @@ class Login(APIResource):
         body = loads(body.decode('utf-8'))
 
         # validate request body
-        data, status = validate(body, 'login')
+        data, status = validate(body, INSERT_USER_SCHEMA)
 
         if status is False:
             raise BadRequest(data)
 
         # validate user login
-        token = auth_business.login(data['email'], data['password'])
+        result_id = user_business.insert_user(body)
 
-        # if there is not a token (i.e. empty string), then raise an error
-        if not token:
-            raise InternalServerError('Error during login.')
+        # if ..., then raise an exception
+        if not result_id:
+            raise NotFound('E-mail or Password was not found.')
 
-        return token
+        return result_id
