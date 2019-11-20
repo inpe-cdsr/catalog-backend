@@ -6,7 +6,7 @@ from werkzeug.exceptions import Forbidden
 
 from dgi_catalog.model import DatabaseConnection
 
-BASE = ''
+BASE = 'media'
 
 class DownloadBusiness():
     def __init__(self):
@@ -14,7 +14,7 @@ class DownloadBusiness():
 
     def parse_path(self, path):
         infos = path.split('/')
-        scene_id = infos[:-1]
+        scene_id = infos[len(infos) - 1]
         url_path = "{}/{}".format(BASE, path)
         return scene_id, url_path
 
