@@ -65,7 +65,9 @@ class TestCatalogUser(TestCase):
         # Delete the user
         ##################################################
 
-        response = app.delete(URL + email, data=dumps(body))
+        authorization = 'Basic: ' + token
+
+        response = app.delete(URL + email, data=dumps(body), headers={'Authorization': authorization})
 
         self.assertEqual(200, response.status_code)
 

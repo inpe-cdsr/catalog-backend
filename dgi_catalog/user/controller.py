@@ -15,6 +15,8 @@ from dgi_catalog.user import ns
 from dgi_catalog.user.business import UserBusiness
 from dgi_catalog.user.parsers import validate, INSERT_USER_SCHEMA
 
+from dgi_catalog.common import jwt_decode
+
 
 api = ns
 
@@ -22,14 +24,14 @@ user_business = UserBusiness()
 
 
 @api.route('/')
-@api.route('/<string:argument>')
+@api.route('/<string:user_id>')
 class User(APIResource):
     """
     User
     Full route: /catalog/user/
     """
 
-    def post(self, argument=None):
+    def post(self, user_id=None):
         """
         Creates a user into the system
 
@@ -72,13 +74,13 @@ class User(APIResource):
 
         return Response(result_id)
 
-    def delete(self, argument):
+    def delete(self, user_id):
         """
         Deletes a user into the system based on his/her id passed as argument
 
-        Request Parameters
+        Request Arguments
         ----------
-        argument : string
+        user_id : string
             User id
 
         Returns
@@ -87,10 +89,19 @@ class User(APIResource):
             Nothing
         """
 
-        # TODO: get user token to validate
+        # get Authorization header and extract just the token
+        authorization = request.headers.get('Authorization')[7:]
 
-        if argument == b'':
+        # decode the token
+        decoded_auth = jwt_decode(authorization)
+
+        # if the logged user is trying to delete another user, then raise an error,
+        # because a user can delete just [him|her]self
+        if decoded_auth['userId'] != user_id:
+            raise BadRequest('Logged user is not allowed to delete another user.')
+
+        if user_id == b'':
             raise BadRequest('User id was not passed.')
 
         # delete user
-        user_business.delete_user(argument)
+        user_business.delete_user(user_id)
