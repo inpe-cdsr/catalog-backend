@@ -42,27 +42,21 @@ class DatabaseConnection():
 
     def close(self):
         self.connection.close()
-        # print('Database connection was successfully closed.')
 
     def connect(self):
         try:
             self.connection = connect(user=MYSQL_DB_USER, password=MYSQL_DB_PASSWORD,
                                       host=MYSQL_DB_HOST, database=MYSQL_DB_DATABASE)
 
-            # print('Database was successfully connected.')
         except Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                # print("Something is wrong with your user name or password")
                 print('Access was denied to your credentials.')
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                # print("Database does not exist")
                 print('Database does not exist.')
             else:
-                # print(err)
                 print('An error occurred during database connection: %s', err)
 
             self.close()
-            print('Database connection was closed.')
 
     def commit(self):
         self.connection.commit()
@@ -70,20 +64,21 @@ class DatabaseConnection():
     def rollback(self):
         self.connection.rollback()
 
-    def execute(self, query, params=None):
+    def execute(self, query, params=None, is_transaction=False):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        print('Database connection was created.')
+        # print('Database connection was created.')
 
         result = None
 
         try:
             cursor.execute(query, params=params)
 
-            # commit any changes
-            self.commit()
+            # if query is a transaction statement, then commit the changes
+            if is_transaction:
+                self.commit()
 
-            print('The query was executed successfully.')
+            # print('The query was executed successfully.')
 
             # if there are rows, then return them (SELECT operation)
             if cursor.with_rows:
@@ -103,7 +98,7 @@ class DatabaseConnection():
         finally:
             cursor.close()
             self.close()
-            print('Database connection was closed.')
+            # print('Database connection was closed.')
 
     def select_user(self, email=None, password=None):
         # Sources:
@@ -162,7 +157,7 @@ class DatabaseConnection():
             'marlin': marlin
         }
 
-        self.execute(query, params)
+        self.execute(query, params, is_transaction=True)
 
         # return user id (i.e. e-mail)
         return email
