@@ -7,6 +7,7 @@ Controllers
 
 from json import loads, dumps
 from flask import request
+from flask import Response
 from werkzeug.exceptions import BadRequest, InternalServerError
 from bdc_core.utils.flask import APIResource
 
@@ -45,8 +46,6 @@ class Login(APIResource):
 
         body = request.data
 
-        # print('\n\n body: ', body)
-
         if body == b'':
             raise BadRequest('Request data is empty.')
 
@@ -60,10 +59,10 @@ class Login(APIResource):
             raise BadRequest(data)
 
         # validate user login
-        token = auth_business.login(data['email'], data['password'])
+        token = auth_business.login(body['email'], body['password'])
 
         # if there is not a token (i.e. empty string), then raise an error
         if not token:
             raise InternalServerError('Error during login.')
 
-        return token
+        return Response(token)

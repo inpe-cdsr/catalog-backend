@@ -110,13 +110,10 @@ class DatabaseConnection():
             WHERE email=%(email)s AND password=%(password)s
         '''
 
-        params = { 'email': email, 'password': password }
+        params = { 'email': email, 'password': mysql_old_password(password) }
 
         # execute the query and fix the resulted rows
-        rows = self.execute(query, params)
-        rows = fix_rows(rows)
-
-        return rows
+        return fix_rows(self.execute(query, params))
 
     def insert_user(self, email=None, password=None, fullname='', cnpjCpf='',
                     areaCode='', phone='', company='', companyType='',
