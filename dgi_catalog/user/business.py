@@ -11,7 +11,9 @@ class UserBusiness():
         self.db_connection = DatabaseConnection()
 
     def insert_user(self, data):
-        # print('\n\n UserBusiness.insert_user()')
-
         # insert user into database and get user id
         return self.db_connection.insert_user(**data)
+
+    def delete_user(self, user_id):
+        # delete user into database
+        return self.db_connection.delete_user(user_id)

@@ -124,8 +124,6 @@ class DatabaseConnection():
                     userStatus='', marlin=0):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
-        # print('\n\n DatabaseConnection.insert_user()')
-
         query = '''
             INSERT INTO User (
                 userId, email, password, fullname, CNPJ_CPF,
@@ -165,4 +163,14 @@ class DatabaseConnection():
         # return user id
         # return self.execute(query, params)
 
+    def delete_user(self, user_id):
+        query = '''
+            DELETE FROM User
+            WHERE userId=%(user_id)s;
+        '''
 
+        params = {
+            'user_id': user_id
+        }
+
+        self.execute(query, params, is_transaction=True)
