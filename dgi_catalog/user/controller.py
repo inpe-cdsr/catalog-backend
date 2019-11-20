@@ -89,13 +89,8 @@ class User(APIResource):
 
         # TODO: get user token to validate
 
-        print('\n\n argument: ', argument)
-
         if argument == b'':
             raise BadRequest('User id was not passed.')
 
-        # get request data (bytes) and convert it to dict
-        # body = loads(body.decode('utf-8'))
-
         # delete user
-        # user_business.delete_user(argument)
+        user_business.delete_user(argument)

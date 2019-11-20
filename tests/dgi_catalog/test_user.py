@@ -21,14 +21,18 @@ class TestCatalogUser(TestCase):
 
     def test__post_delete__catalog_user__200_success(self):
         """
-        TestCatalogUser.test__post__catalog_user__200_success
+        TestCatalogUser.test__post_delete__catalog_user__200_success
 
-        Test the creation of a user
+        Test the creation and deletion of a user
         """
 
         random_seed = randrange(9999999)
 
         email = 'test_user_{}@test_user.com'.format(random_seed)
+
+        ##################################################
+        # Create a user
+        ##################################################
 
         # 'addressId = 3' is a default address to test
         body = {
@@ -43,7 +47,13 @@ class TestCatalogUser(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual(email, response.data.decode('utf-8'))
 
-        # TODO: add delete user here
+        ##################################################
+        # Delete the user
+        ##################################################
+
+        response = app.delete(URL + email, data=dumps(body))
+
+        self.assertEqual(200, response.status_code)
 
 
 class TestCatalogUserError(TestCase):

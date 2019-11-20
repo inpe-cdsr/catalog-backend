@@ -14,7 +14,7 @@ from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
 def fix_rows(rows):
     for row in rows:
         for key in row:
-            # datetime/date is not serializable by default, then get a serializable string representation
+            # datetime/date is not serializable by default, then it gets a serializable string representation
             if isinstance(row[key], (datetime, date)):
                 row[key] = row[key].isoformat()
 
