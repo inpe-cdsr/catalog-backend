@@ -59,3 +59,4 @@ wcwidth==0.1.7
 Werkzeug==0.15.3
 workalendar==2.3.1
 zipp==0.6.0
+ip2geotools==0.1.5

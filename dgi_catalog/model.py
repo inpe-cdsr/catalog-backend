@@ -165,4 +165,33 @@ class DatabaseConnection():
         # return user id
         # return self.execute(query, params)
 
+    def insert_statistics(self, userId, sceneId, path, ip,
+                    country=None, region=None, lat=None, lng=None):
+        # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
+        # print('\n\n DatabaseConnection.insert_statistics()')
+
+        query = '''
+            INSERT INTO Download (
+                userId, sceneId, path, ip, region,
+                country, latitude, longitude, date
+            ) VALUES (
+                %(userId)s, %(sceneId)s, %(path)s, %(ip)s, %(region)s,
+                %(country)s, %(latitude)s, %(longitude)s, CURRENT_DATE()
+            )
+        '''
+
+        params = {
+            'userId': userId,
+            'sceneId': sceneId,
+            'path': path,
+            'ip': ip,
+            'region': region,
+            'country': country,
+            'latitude': lat,
+            'longitude': lng
+        }
+
+        self.execute(query, params, is_transaction=True)
+
+        return True
