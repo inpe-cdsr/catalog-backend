@@ -5,7 +5,7 @@ Get environment variables
 from os import environ as os_environ
 
 # enviroment
-ENV = os_environ.get('ENV', 'development')
+ENV = os_environ.get('ENV', 'debug')
 
 # MYSQL connection
 MYSQL_DB_USER = os_environ.get('MYSQL_DB_USER', 'test')

@@ -14,7 +14,7 @@ from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
 def fix_rows(rows):
     for row in rows:
         for key in row:
-            # datetime/date is not serializable by default, then get a serializable string representation
+            # datetime/date is not serializable by default, then it gets a serializable string representation
             if isinstance(row[key], (datetime, date)):
                 row[key] = row[key].isoformat()
 
@@ -110,21 +110,16 @@ class DatabaseConnection():
             WHERE email=%(email)s AND password=%(password)s
         '''
 
-        params = { 'email': email, 'password': password }
+        params = { 'email': email, 'password': mysql_old_password(password) }
 
         # execute the query and fix the resulted rows
-        rows = self.execute(query, params)
-        rows = fix_rows(rows)
-
-        return rows
+        return fix_rows(self.execute(query, params))
 
     def insert_user(self, email=None, password=None, fullname='', cnpjCpf='',
                     areaCode='', phone='', company='', companyType='',
                     activity='', userType='', addressId=None,
                     userStatus='', marlin=0):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
-
-        # print('\n\n DatabaseConnection.insert_user()')
 
         query = '''
             INSERT INTO User (
@@ -195,3 +190,16 @@ class DatabaseConnection():
         self.execute(query, params, is_transaction=True)
 
         return True
+
+    def delete_user(self, user_id):
+        query = '''
+            DELETE FROM User
+            WHERE userId=%(user_id)s;
+        '''
+
+        params = {
+            'user_id': user_id
+        }
+
+        self.execute(query, params, is_transaction=True)
+        

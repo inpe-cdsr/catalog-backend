@@ -13,8 +13,6 @@ class AuthBusiness():
         self.db_connection = DatabaseConnection()
 
     def login(self, email, password):
-        # print('\n\n login()')
-
         result = self.db_connection.select_user(email=email, password=password)
 
         # if an empty list (i.e. result == []), then raise an exception

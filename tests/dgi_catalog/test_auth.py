@@ -34,7 +34,7 @@ class TestCatalogAuthLoginSuccess(TestCase):
 
         self.assertEqual(200, response.status_code)
         # check if a non-empty string has been returned (i.e. a token has been returned)
-        self.assertNotEqual('', loads(response.data))
+        self.assertNotEqual('', response.data.decode('utf-8'))
 
 
 class TestCatalogAuthLoginError(TestCase):

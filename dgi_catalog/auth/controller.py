@@ -7,6 +7,7 @@ Controllers
 
 from json import loads, dumps
 from flask import request
+from flask import Response
 from werkzeug.exceptions import BadRequest, InternalServerError
 from bdc_core.utils.flask import APIResource
 
@@ -44,8 +45,6 @@ class Login(APIResource):
         """
 
         body = request.data
-
-        # print('\n\n body: ', body)
 
         if body == b'':
             raise BadRequest('Request data is empty.')
