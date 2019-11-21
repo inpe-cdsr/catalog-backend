@@ -5,10 +5,10 @@
 Controllers
 """
 
-from json import loads, dumps
+from json import loads
 from flask import request
 from flask import Response
-from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+from werkzeug.exceptions import BadRequest, NotFound
 from bdc_core.utils.flask import APIResource
 
 from dgi_catalog.user import ns
@@ -41,8 +41,8 @@ class User(APIResource):
             JSON in bytes format that contains user information to be inserted
             Example: b"{
                 'email': 'test_user@test_user.com', 'password': 'test', 'fullname': 'Test',
-                'cnpjCpf': '123456', 'areaCode': '12', 'phone': '1452-2563', 'company': 'Abc',
-                'companyType': '', 'activity': 'developer', 'addressId': 3
+                'phone': '1452-2563', 'company': 'Abc',
+                'companyType': '', 'activity': 'developer'
             }"
 
         Returns
@@ -72,7 +72,9 @@ class User(APIResource):
         if not result_id:
             raise NotFound('E-mail or Password was not found.')
 
-        return Response(result_id)
+        return {
+            "user_id": result_id
+        }
 
     def delete(self, user_id):
         """

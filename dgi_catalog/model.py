@@ -115,6 +115,22 @@ class DatabaseConnection():
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
 
+
+    def select_user_by_email(self, email=None):
+        # Sources:
+        # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
+        # https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
+
+        query = '''
+            SELECT * FROM User
+            WHERE email=%(email)s
+        '''
+
+        params = { 'email': email }
+
+        # execute the query and fix the resulted rows
+        return fix_rows(self.execute(query, params))
+
     def insert_user(self, email=None, password=None, fullname='', cnpjCpf='',
                     areaCode='', phone='', company='', companyType='',
                     activity='', userType='', addressId=None,
@@ -190,6 +206,35 @@ class DatabaseConnection():
         self.execute(query, params, is_transaction=True)
 
         return True
+    
+    def insert_address(self, userId, cep, street, number, city, state, country):
+        # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
+
+        # print('\n\n DatabaseConnection.insert_address()')
+
+        query = '''
+            INSERT INTO Address (
+                userId, cep, street, number, city, 
+                state, country, addressType, CNPJ_CPF
+            ) VALUES (
+                %(userId)s, %(cep)s, %(street)s, %(number)s, %(city)s,
+                %(state)s, %(country)s, "", ""
+            )
+        '''
+
+        params = {
+            'userId': userId,
+            'cep': cep,
+            'street': street,
+            'number': number,
+            'city': city,
+            'state': state,
+            'country': country
+        }
+
+        address = self.execute(query, params, is_transaction=True)
+
+        return address
 
     def delete_user(self, user_id):
         query = '''
