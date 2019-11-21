@@ -14,7 +14,7 @@ from dgi_catalog.status.controller import api as status_ns
 from dgi_catalog.download.controller import api as download_ns
 
 
-blueprint = Blueprint('catalog', __name__, url_prefix='/catalog')
+blueprint = Blueprint('api', __name__, url_prefix='/api')
 
 api = Api(blueprint, doc=False)
 

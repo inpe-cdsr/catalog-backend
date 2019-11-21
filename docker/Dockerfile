@@ -1,11 +1,9 @@
-FROM registry.dpi.inpe.br/brazildatacube/python-deploy:0.0.1
+FROM brazildatacube/base:0.1
 
-RUN apk update \
-    && apk add --virtual build-dependencies \
-        build-base
-
-COPY . /app
+ADD . /app
 
 WORKDIR /app
 
 RUN pip3 install -r requirements.txt
+
+CMD [ "python3", "manage.py", "run" ]
