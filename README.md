@@ -72,6 +72,6 @@ docker run --interactive \
            --tty \
            --detach \
            --name tiler_app \
-           --publish 5080:80 \
+           --publish 5080:5000 \
            dgi_catalog_backend:0.0.1
 ```

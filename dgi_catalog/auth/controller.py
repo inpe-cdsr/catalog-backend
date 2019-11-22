@@ -59,10 +59,14 @@ class Login(APIResource):
             raise BadRequest(data)
 
         # validate user login
-        token = auth_business.login(body['email'], body['password'])
+        token, user_id, fullname = auth_business.login(data['email'], data['password'])
 
         # if there is not a token (i.e. empty string), then raise an error
-        if not token:
+        if not token or not user_id or not fullname:
             raise InternalServerError('Error during login.')
 
-        return Response(token)
+        return {
+            "access_token": token,
+            "user_id": user_id,
+            "fullname": fullname
+        }
