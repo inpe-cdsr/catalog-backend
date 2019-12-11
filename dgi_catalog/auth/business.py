@@ -21,4 +21,4 @@ class AuthBusiness():
 
         encoded_token = jwt_encode(result[0])
 
-        return encoded_token, result[0]['userId'], result[0]['fullname']
+        return encoded_token, result[0]
