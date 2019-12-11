@@ -70,5 +70,5 @@ class Login(APIResource):
             "user_id": user_info['userId'],
             "fullname": user_info['fullname'],
             "email": user_info['email'],
-            "password": user_info['password']
+            "password": data['password']
         }
