@@ -62,7 +62,7 @@ python manage.py test
 You can configure the environment to run through Docker containers. In order to do that, build the image `dgi/catalog`:
 
 ```bash
-docker build -t dgi-catalog-backend_dev:0.0.1 -f docker/dev.Dockerfile . --no-cache
+docker build -t dgi-catalog-backend:0.0.1 -f docker/dev.Dockerfile . --no-cache
 docker build -t registry.dpi.inpe.br/dgi/dgi-catalog-backend:0.0.1 -f docker/prod.Dockerfile . --no-cache
 ```
 
