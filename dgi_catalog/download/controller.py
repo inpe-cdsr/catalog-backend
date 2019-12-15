@@ -12,6 +12,7 @@ from dgi_catalog.download import ns
 from dgi_catalog.download.business import DownloadBusiness
 from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
+from werkzeug.exceptions import Unauthorized
 
 api = ns
 download_business = DownloadBusiness()
@@ -35,7 +36,16 @@ class Download(APIResource):
         except Exception:
             address = IpLocation(request.remote_addr)
 
-        credentials = request.authorization
-        image = download_business.get_image(credentials, path, address)
+        if request.authorization:
+            credentials = request.authorization
+            username = credentials.username
+            password = credentials.password
+        elif request.args.get('key'):
+            credentials = request.args['key'].split(':')
+            username = credentials[0]
+            password = credentials[1]
+        else:
+            raise Unauthorized('credentials are required')
 
+        image = download_business.get_image(username, password, path, address)
         return Response(image, 200, content_type='image/tif')

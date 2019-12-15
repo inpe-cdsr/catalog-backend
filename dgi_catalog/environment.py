@@ -16,3 +16,5 @@ MYSQL_DB_DATABASE = os_environ.get('MYSQL_DB_DATABASE', 'database')
 # JWT
 JWT_SECRET = os_environ.get('JWT_SECRET', 'MY_SECRET')
 JWT_ALGORITHM = os_environ.get('JWT_ALGORITHM', 'JWT_ALGORITHM')
+
+BASE_PATH = os_environ.get('BASE_PATH', '')
