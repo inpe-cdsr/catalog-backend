@@ -16,13 +16,6 @@ class DownloadBusiness():
         url_path = "{}/{}".format(BASE_PATH, path)
         return scene_id, url_path
 
-    def get_file(self, url_path):
-        with open(url_path, "rb") as f:
-            byte = f.read(1)
-            while byte != b"":
-                byte = f.read(1)
-        return byte
-
     def get_image(self, username, password, path, address):
         # validate credentials
         result = self.db_connection.select_user(
@@ -33,7 +26,6 @@ class DownloadBusiness():
         # get file
         # e.g: path = /Repository/.../CBERS_4_MUX_20191022_154_126_L2.tif
         scene_id, url_path = self.parse_path(path)
-        image = self.get_file(url_path)
 
         # save statistics
         self.db_connection.insert_statistics(
@@ -41,5 +33,8 @@ class DownloadBusiness():
             address.ip_address, address.country, address.region,
             address.latitude, address.longitude)
 
-        return image
+        url = url_path if not BASE_PATH else '{}{}'.format(BASE_PATH, url_path)
+        url_parts = url.split('/')
+        file_name = url_parts[len(url_parts)-1]
+        return url.replace('/{}'.format(file_name), ''), file_name
         
