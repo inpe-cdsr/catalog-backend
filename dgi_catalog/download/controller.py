@@ -5,7 +5,7 @@
 Controllers
 """
 
-from flask import request, Response
+from flask import request, send_from_directory
 from bdc_core.utils.flask import APIResource
 
 from dgi_catalog.download import ns
@@ -47,5 +47,5 @@ class Download(APIResource):
         else:
             raise Unauthorized('credentials are required')
 
-        image = download_business.get_image(username, password, path, address)
-        return Response(image, 200, content_type='image/tif')
+        path_image, file_name = download_business.get_image(username, password, path, address)
+        return send_from_directory(path_image, file_name)
