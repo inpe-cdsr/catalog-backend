@@ -65,7 +65,13 @@ You can configure the environment to run through Docker containers. In order to 
 
 ```bash
 docker build -t dgi-catalog-backend -f docker/dev.Dockerfile . --no-cache
-docker build -t registry.dpi.inpe.br/dgi/dgi-catalog-backend:0.0.1 -f docker/prod.Dockerfile . --no-cache
+docker build -t registry.dpi.inpe.br/dgi/catalog_api:0.0.8 -f docker/prod.Dockerfile . --no-cache
+```
+
+Push the Docker image to the registry:
+
+```
+docker push registry.dpi.inpe.br/dgi/catalog_api:0.0.8
 ```
 
 After that, you can run the application with  the following command:
