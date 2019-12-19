@@ -42,18 +42,20 @@ Activating environment variables and pyenv.
 pyenv activate dgi_catalog_backend
 ```
 
-Run manage.py file using in production or development mode:
-
-```
-source environment.production.env
-python manage.py run
-```
-
 Run manage.py file using in test mode:
 
 ```
-source environment.development.env
+set -a && source environment.dev.env && set +a
+python manage.py run
+or
 python manage.py test
+```
+
+Run manage.py file using in production or development mode:
+
+```
+set -a && source environment.prod.env && set +a
+python manage.py run
 ```
 
 
