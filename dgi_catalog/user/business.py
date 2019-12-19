@@ -21,13 +21,18 @@ class UserBusiness():
         if user:
             raise Conflict('E-mail already registered!')
 
-        # if there is 'address' field, then insert it in the database
+        # if there is 'address' field, then try to insert address
+        # information in the database
         if 'address' in data:
-            address_id = self.db_connection.insert_address(data['email'],
-                                                           **data['address'])
+            # if there are properties inside 'address' field,
+            # then insert the address in the database
+            if data['address']:
+                address_id = self.db_connection.insert_address(data['email'],
+                                                               **data['address'])
+                data['addressId'] = address_id
 
+            # remove 'address' field from dict
             del data['address']
-            data['addressId'] = address_id
 
         return self.db_connection.insert_user(**data)
 
