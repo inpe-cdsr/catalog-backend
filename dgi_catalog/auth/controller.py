@@ -25,7 +25,7 @@ auth_business = AuthBusiness()
 class Login(APIResource):
     """
     Login
-    Full route: /catalog/auth/login
+    Full route: /api/auth/login
     """
 
     def post(self):

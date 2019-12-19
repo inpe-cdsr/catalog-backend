@@ -69,8 +69,6 @@ class DatabaseConnection():
         cursor = self.connection.cursor(dictionary=True)
         # print('Database connection was created.')
 
-        result = None
-
         try:
             cursor.execute(query, params=params)
 
@@ -173,11 +171,8 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
-        # return user id
-        # return self.execute(query, params)
-
     def insert_statistics(self, userId, sceneId, path, ip,
-                    country=None, region=None, lat=None, lng=None):
+                          country=None, region=None, lat=None, lng=None):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
         # print('\n\n DatabaseConnection.insert_statistics()')
@@ -206,7 +201,7 @@ class DatabaseConnection():
         self.execute(query, params, is_transaction=True)
 
         return True
-    
+
     def insert_address(self, userId, cep, street, number, city, state, country):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
@@ -214,7 +209,7 @@ class DatabaseConnection():
 
         query = '''
             INSERT INTO Address (
-                userId, cep, street, number, city, 
+                userId, cep, street, number, city,
                 state, country, addressType, CNPJ_CPF
             ) VALUES (
                 %(userId)s, %(cep)s, %(street)s, %(number)s, %(city)s,
@@ -232,9 +227,9 @@ class DatabaseConnection():
             'country': country
         }
 
-        address = self.execute(query, params, is_transaction=True)
+        address_id = self.execute(query, params, is_transaction=True)
 
-        return address
+        return address_id
 
     def delete_user(self, user_id):
         query = '''
@@ -247,4 +242,3 @@ class DatabaseConnection():
         }
 
         self.execute(query, params, is_transaction=True)
-        

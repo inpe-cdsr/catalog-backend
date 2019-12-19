@@ -4,29 +4,19 @@ Validator
 
 from cerberus import Validator
 
-ADDRESS_SCHEMA = {
-    'cep': {"type": "string", "empty": False, "required": True},
-    'street': {"type": "string", "empty": False, "required": True},
-    'number': {"type": "string", "empty": False, "required": True},
-    'city': {"type": "string", "empty": False, "required": True},
-    'state': {"type": "string", "empty": False, "required": True},
-    'country': {"type": "string", "empty": False, "required": True},
-}
 
 INSERT_USER_SCHEMA = {
     'email': {"type": "string", "empty": False, "required": True},
     'password': {"type": "string", "empty": False, "required": True},
     'fullname': {"type": "string", "empty": False, "required": True},
     'cnpjCpf': {"type": "string", "empty": False, "required": False},
-    'phone': {"type": "string", "empty": False, "required": True},
-    'areaCode': {"type": "string", "empty": False, "required": True},
+    'phone': {"type": "string", "empty": False, "required": False},
+    'areaCode': {"type": "string", "empty": False, "required": False},
     'company': {"type": "string", "empty": False, "required": True},
-    'companyType': {"type": "string", "empty": True, "required": True},
-    'activity': {"type": "string", "empty": True, "required": True},
-    'address': { 
-        "type": "dict",
-        "schema": ADDRESS_SCHEMA
-    }
+    'companyType': {"type": "string", "empty": False, "required": True},
+    'activity': {"type": "string", "empty": False, "required": True},
+    'addressId': {"type": "integer", "empty": False, "required": False},
+    'address': {"type": "dict", "empty": True, "required": False}
 }
 
 

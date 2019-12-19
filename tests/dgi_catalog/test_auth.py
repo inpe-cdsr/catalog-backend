@@ -15,7 +15,7 @@ from test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 app = dgi_catalog_app.test_client()
 
-URL = '/catalog/auth/login'
+URL = '/api/auth/login'
 
 
 class TestCatalogAuthLoginSuccess(TestCase):

@@ -9,8 +9,8 @@ from dgi_catalog import app as dgi_catalog_app
 
 app = dgi_catalog_app.test_client()
 
-URL = '/catalog/user/'
-URL_LOGIN = '/catalog/auth/login'
+URL = '/api/user/'
+URL_LOGIN = '/api/auth/login'
 
 
 class TestCatalogUser(TestCase):
@@ -37,37 +37,41 @@ class TestCatalogUser(TestCase):
         # 'addressId = 3' is a default address to test
         body = {
             'email': email, 'password': password, 'fullname': 'Test',
-            'cnpjCpf': '123456', 'areaCode': '12', 'phone': '1452-2563', 'company': 'Abc',
-            'companyType': '', 'activity': 'developer', 'addressId': 3,
-            # 'userType': '', 'userStatus':  '', 'marlin': 0
+            'cnpjCpf': '123456', 'areaCode': '12', 'phone': '1452-2563',
+            'company': 'Abc', 'companyType': 'image processing',
+            'activity': 'developer'
+            #'userType': '', 'userStatus':  '', 'marlin': 0
         }
 
         response = app.post(URL, data=dumps(body))
 
+        expected = {
+            'user_id': email
+        }
+
         self.assertEqual(200, response.status_code)
-        self.assertEqual(email, response.data.decode('utf-8'))
+        self.assertEqual(expected, loads(response.data.decode('utf-8')))
 
         ##################################################
         # Log the user in the system
         ##################################################
 
-        body = { 'email': email, 'password': password }
+        body = {'email': email, 'password': password}
 
         response = app.post(URL_LOGIN, data=dumps(body))
 
-        token = response.data.decode('utf-8')
+        user_information = loads(response.data.decode('utf-8'))
 
         self.assertEqual(200, response.status_code)
-        # check if a non-empty string has been returned (i.e. a token has been returned)
-        self.assertNotEqual('', token)
 
         ##################################################
         # Delete the user
         ##################################################
 
-        authorization = 'Basic: ' + token
+        authorization = 'Basic: ' + user_information['access_token']
 
-        response = app.delete(URL + email, data=dumps(body), headers={'Authorization': authorization})
+        response = app.delete(URL + email, data=dumps(body),
+                              headers={'Authorization': authorization})
 
         self.assertEqual(200, response.status_code)
 

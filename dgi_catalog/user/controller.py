@@ -28,7 +28,7 @@ user_business = UserBusiness()
 class User(APIResource):
     """
     User
-    Full route: /catalog/user/
+    Full route: /api/user/
     """
 
     def post(self, user_id=None):
@@ -65,12 +65,12 @@ class User(APIResource):
         if status is False:
             raise BadRequest(data)
 
-        # validate user login
+        # insert user in the database
         result_id = user_business.insert_user(body)
 
         # if there is not an id, then raise an exception
         if not result_id:
-            raise NotFound('E-mail or Password was not found.')
+            raise NotFound('E-mail or password was not found.')
 
         return {
             "user_id": result_id

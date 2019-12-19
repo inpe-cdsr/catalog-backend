@@ -15,19 +15,21 @@ class UserBusiness():
         Inserts a user into database and it returns his/her id
         """
 
-        # Verify if exists user
+        # check if user exists
         user = self.db_connection.select_user_by_email(data['email'])
+
         if user:
             raise Conflict('E-mail already registered!')
 
-        # insert address
-        address = self.db_connection.insert_address(data['email'], **data['address'])
+        # if there is 'address' field, then insert it in the database
+        if 'address' in data:
+            address_id = self.db_connection.insert_address(data['email'],
+                                                           **data['address'])
 
-        user_infos = data
-        user_infos['addressId'] = address
-        del user_infos['address']
-        
-        return self.db_connection.insert_user(**user_infos)
+            del data['address']
+            data['addressId'] = address_id
+
+        return self.db_connection.insert_user(**data)
 
     def delete_user(self, user_id):
         """

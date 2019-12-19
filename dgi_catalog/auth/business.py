@@ -5,7 +5,7 @@ business.py
 from werkzeug.exceptions import NotFound
 
 from dgi_catalog.model import DatabaseConnection
-from dgi_catalog.common import jwt_encode, jwt_decode
+from dgi_catalog.common import jwt_encode
 
 
 class AuthBusiness():
