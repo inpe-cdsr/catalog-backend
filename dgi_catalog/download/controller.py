@@ -35,9 +35,7 @@ class Download(APIResource):
             ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
             address = DbIpCity.get(ip, api_key='free')
         except Exception:
-            if not ip:
-                ip = request.remote_addr
-            address = IpLocation(ip)
+            address = IpLocation(request.remote_addr)
 
         if request.authorization:
             credentials = request.authorization
