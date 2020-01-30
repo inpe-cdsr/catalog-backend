@@ -32,7 +32,8 @@ class Download(APIResource):
         image/tif
         """
         try:
-            address = DbIpCity.get(request.remote_addr, api_key='free')
+            ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+            address = DbIpCity.get(ip, api_key='free')
         except Exception:
             address = IpLocation(request.remote_addr)
 
