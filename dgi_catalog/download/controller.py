@@ -66,10 +66,11 @@ class Download(APIResource):
         parameters = {
             'path': path,
             'address': address,
-            'collection': request.args.get('collection'),
+            'dataset': request.args.get('collection'),
             'scene_id': request.args.get('scene_id')
         }
 
+        # do not print username and password
         logging.debug('Download.get() - parameters: %s', parameters)
 
         parameters['username'] = username
