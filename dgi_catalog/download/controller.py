@@ -41,11 +41,17 @@ class Download(APIResource):
         logging.info('Download.get() - path: %s', path)
 
         try:
+            logging.info('Download.get() - request.remote_addr: %s', request.remote_addr)
+
             ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
 
             logging.info('Download.get() - ip: %s', ip)
 
-            address = DbIpCity.get(ip, api_key='free')
+            ip_formatted = ip.split(',')[0] if ip else request.remote_addr
+
+            logging.info('Download.get() - ip_formatted: %s', ip_formatted)
+
+            address = DbIpCity.get(ip_formatted, api_key='free')
         except Exception:
             address = IpLocation(request.remote_addr)
 

@@ -188,7 +188,7 @@ class DatabaseConnection():
             ) VALUES (
                 %(user_id)s, %(scene_id)s, %(path)s, %(ip)s, %(region)s,
                 %(country)s, %(latitude)s, %(longitude)s, %(dataset)s,
-                CURRENT_DATE()
+                NOW()
             )
         '''
 

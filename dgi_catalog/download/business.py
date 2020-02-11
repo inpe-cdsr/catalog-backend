@@ -34,8 +34,8 @@ class DownloadBusiness():
         if not result:
             raise Forbidden('E-mail or Password was not found.')
 
-        # get file
-        # e.g: path = /Repository/.../CBERS_4_MUX_20191022_154_126_L2.tif
+        # get the path to the file
+        # e.g: url = '/data/TIFF/.../CBERS_4_MUX_20191022_154_126_L2.tif'
         url = "{}/{}".format(BASE_PATH, path)
 
         logging.info('DownloadBusiness.get_image() - BASE_PATH: %s', BASE_PATH)
