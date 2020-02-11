@@ -76,9 +76,6 @@ class Download(APIResource):
         parameters['username'] = username
         parameters['password'] = password
 
-        path_image, file_name = self.download_business.get_image(**parameters)
+        directory, filename = self.download_business.get_image(**parameters)
 
-        logging.info('Download.get() - path_image: %s', path_image)
-        logging.info('Download.get() - file_name: %s', file_name)
-
-        return send_from_directory(path_image, file_name)
+        return send_from_directory(directory, filename)

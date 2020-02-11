@@ -36,27 +36,30 @@ class DownloadBusiness():
 
         # get file
         # e.g: path = /Repository/.../CBERS_4_MUX_20191022_154_126_L2.tif
-        url_path = "{}/{}".format(BASE_PATH, path)
+        url = "{}/{}".format(BASE_PATH, path)
 
         logging.info('DownloadBusiness.get_image() - BASE_PATH: %s', BASE_PATH)
-        logging.info('DownloadBusiness.get_image() - url_path: %s', url_path)
+        logging.info('DownloadBusiness.get_image() - url: %s', url)
 
         # save statistics
         self.db_connection.insert_statistics(
-            user_id=result[0]['userId'], scene_id=scene_id, path=url_path,
+            user_id=result[0]['userId'], scene_id=scene_id, path=url,
             ip=address.ip_address, country=address.country, region=address.region,
             latitude=address.latitude, longitude=address.longitude, dataset=dataset
         )
 
-        # url = url_path if not BASE_PATH else '{}{}'.format(BASE_PATH, url_path)
-        url = url_path
-
-        logging.info('DownloadBusiness.get_image() - url: %s', url)
+        # url = url if not BASE_PATH else '{}{}'.format(BASE_PATH, url)
 
         url_parts = url.split('/')
-        file_name = url_parts[len(url_parts)-1]
+
+        # get the last element of the list, in other words, the filename
+        filename = url_parts[len(url_parts)-1]
+
+        # get just the directory, without the filename
+        directory = url.replace('/{}'.format(filename), '')
 
         logging.info('DownloadBusiness.get_image() - url_parts: %s', url_parts)
-        logging.info('DownloadBusiness.get_image() - file_name: %s', file_name)
+        logging.info('DownloadBusiness.get_image() - filename: %s', filename)
+        logging.info('DownloadBusiness.get_image() - directory: %s', directory)
 
-        return url.replace('/{}'.format(file_name), ''), file_name
+        return directory, filename
