@@ -9,6 +9,7 @@ from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 
 from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
                                     MYSQL_DB_HOST, MYSQL_DB_DATABASE
+from dgi_catalog.log import logging
 
 
 def fix_rows(rows):
@@ -65,9 +66,14 @@ class DatabaseConnection():
         self.connection.rollback()
 
     def execute(self, query, params=None, is_transaction=False):
+        logging.info('DatabaseConnection.execute()')
+
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        # print('Database connection was created.')
+
+        logging.info('DatabaseConnection.execute() - query: %s', query)
+        # logging.debug('DatabaseConnection.execute() - params: %s', params)
+        logging.info('DatabaseConnection.execute() - is_transaction: %s', is_transaction)
 
         try:
             cursor.execute(query, params=params)
@@ -75,8 +81,6 @@ class DatabaseConnection():
             # if query is a transaction statement, then commit the changes
             if is_transaction:
                 self.commit()
-
-            # print('The query was executed successfully.')
 
             # if there are rows, then return them (SELECT operation)
             if cursor.with_rows:
@@ -87,10 +91,10 @@ class DatabaseConnection():
                 # else it returns '0'
                 return str(cursor.lastrowid)
 
-        except Error as err:
+        except Error as error:
             self.rollback()
-            print('An error occurred during query execution: %s', err)
-            raise BadRequest(str(err))
+            logging.error('An error occurred during query execution: %s', error)
+            raise BadRequest(str(error))
 
         # finally is always executed (both at try and except)
         finally:
@@ -112,7 +116,6 @@ class DatabaseConnection():
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
-
 
     def select_user_by_email(self, email=None):
         # Sources:
@@ -171,36 +174,37 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
-    def insert_statistics(self, userId, sceneId, path, ip,
-                          country=None, region=None, lat=None, lng=None):
+    def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None,
+                          country=None, region=None, latitude=None, longitude=None, dataset=None):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
-        # print('\n\n DatabaseConnection.insert_statistics()')
+        logging.info('DatabaseConnection.insert_statistics()')
 
         query = '''
             INSERT INTO Download (
                 userId, sceneId, path, ip, region,
-                country, latitude, longitude, date
+                country, latitude, longitude, Dataset,
+                date
             ) VALUES (
-                %(userId)s, %(sceneId)s, %(path)s, %(ip)s, %(region)s,
-                %(country)s, %(latitude)s, %(longitude)s, CURRENT_DATE()
+                %(user_id)s, %(scene_id)s, %(path)s, %(ip)s, %(region)s,
+                %(country)s, %(latitude)s, %(longitude)s, %(dataset)s,
+                CURRENT_DATE()
             )
         '''
 
         params = {
-            'userId': userId,
-            'sceneId': sceneId,
+            'user_id': user_id,
+            'scene_id': scene_id,
             'path': path,
             'ip': ip,
             'region': region,
             'country': country,
-            'latitude': lat,
-            'longitude': lng
+            'latitude': latitude,
+            'longitude': longitude,
+            'dataset': dataset
         }
 
         self.execute(query, params, is_transaction=True)
-
-        return True
 
     def insert_address(self, userId, cep, street, number, city, state, country):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html

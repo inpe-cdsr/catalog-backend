@@ -1,40 +1,73 @@
 """
 business.py
 """
+
 from werkzeug.exceptions import Forbidden
 
 from dgi_catalog.model import DatabaseConnection
 from dgi_catalog.environment import BASE_PATH
+from dgi_catalog.log import logging
+
 
 class DownloadBusiness():
     def __init__(self):
         self.db_connection = DatabaseConnection()
 
     def parse_path(self, path):
-        infos = path.split('/')
-        scene_id = infos[len(infos) - 1]
-        url_path = "{}/{}".format(BASE_PATH, path)
-        return scene_id, url_path
+        logging.debug('DownloadBusiness.parse_path()')
 
-    def get_image(self, username, password, path, address):
-        # validate credentials
+        logging.debug('DownloadBusiness.parse_path() - BASE_PATH: %s', BASE_PATH)
+        logging.debug('DownloadBusiness.parse_path() - path: %s', path)
+
+        url_path = "{}/{}".format(BASE_PATH, path)
+
+        logging.debug('DownloadBusiness.parse_path() - url_path: %s', url_path)
+
+        return url_path
+
+    def get_image(self, username=None, password=None, path=None,
+                        address=None, collection=None, scene_id=None):
+        logging.info('DownloadBusiness.get_image()')
+
+        # logging.debug('DownloadBusiness.get_image() - username: %s', username)
+        # logging.debug('DownloadBusiness.get_image() - password: %s', password)
+        logging.info('DownloadBusiness.get_image() - path: %s', path)
+        # logging.info('DownloadBusiness.get_image() - address: %s', address)
+        logging.info('DownloadBusiness.get_image() - collection: %s', collection)
+        logging.info('DownloadBusiness.get_image() - scene_id: %s', scene_id)
+
+        # check if user exists in the database
         result = self.db_connection.select_user(
-            email=username, password=password)
+            email=username, password=password
+        )
+
+        # logging.debug('DownloadBusiness.get_image() - result: %s', result)
+
         if not result:
             raise Forbidden('E-mail or Password was not found.')
 
         # get file
         # e.g: path = /Repository/.../CBERS_4_MUX_20191022_154_126_L2.tif
-        scene_id, url_path = self.parse_path(path)
+        url_path = self.parse_path(path)
+
+        logging.info('DownloadBusiness.get_image() - BASE_PATH: %s', BASE_PATH)
+        logging.info('DownloadBusiness.get_image() - url_path: %s', url_path)
 
         # save statistics
         self.db_connection.insert_statistics(
-            result[0]['userId'], scene_id, url_path,
-            address.ip_address, address.country, address.region,
-            address.latitude, address.longitude)
+            user_id=result[0]['userId'], scene_id=scene_id, path=url_path,
+            ip=address.ip_address, country=address.country, region=address.region,
+            latitude=address.latitude, longitude=address.longitude, dataset=collection
+        )
 
         url = url_path if not BASE_PATH else '{}{}'.format(BASE_PATH, url_path)
+
+        logging.info('DownloadBusiness.get_image() - url: %s', url)
+
         url_parts = url.split('/')
         file_name = url_parts[len(url_parts)-1]
+
+        logging.info('DownloadBusiness.get_image() - url_parts: %s', url_parts)
+        logging.info('DownloadBusiness.get_image() - file_name: %s', file_name)
+
         return url.replace('/{}'.format(file_name), ''), file_name
-        

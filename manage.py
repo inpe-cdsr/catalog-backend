@@ -2,9 +2,12 @@
 
 import contextlib
 import os
+
 # from pathlib import Path
 from flask_script import Manager
+
 from dgi_catalog import app
+from dgi_catalog.environment import SERVER_HOST, SERVER_PORT, DEBUG_MODE
 
 
 manager = Manager(app)
@@ -23,13 +26,7 @@ def working_directory(path):
 
 @manager.command
 def run():
-    host = os.environ.get('SERVER_HOST', '0.0.0.0')
-    try:
-        port = int(os.environ.get('PORT', '5000'))
-    except ValueError:
-        port = 5000
-
-    app.run(host, port)
+    app.run(host=SERVER_HOST, port=SERVER_PORT, debug=DEBUG_MODE)
 
 
 @manager.command

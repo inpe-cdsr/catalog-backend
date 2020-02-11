@@ -65,13 +65,13 @@ You can configure the environment to run through Docker containers. In order to 
 
 ```bash
 docker build -t inpe-cdsr-catalog-backend -f docker/dev.Dockerfile . --no-cache
-docker build -t registry.dpi.inpe.br/dgi/catalog_api:0.0.8 -f docker/prod.Dockerfile . --no-cache
+docker build -t registry.dpi.inpe.br/dgi/catalog_api:0.0.9 -f docker/prod.Dockerfile . --no-cache
 ```
 
 Push the Docker image to the registry:
 
 ```
-docker push registry.dpi.inpe.br/dgi/catalog_api:0.0.8
+docker push registry.dpi.inpe.br/dgi/catalog_api:0.0.9
 ```
 
 After that, you can run the application with  the following command:
