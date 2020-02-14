@@ -68,11 +68,11 @@ class Download(APIResource):
 
         logging.info('Download.get() - request.remote_addr: %s', request.remote_addr)
 
-        ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        ips_string = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
 
-        logging.info('Download.get() - ip: %s', ip)
+        logging.info('Download.get() - ips_string: %s', ips_string)
 
-        ips_list = ip.split(',')
+        ips_list = [ip.strip() for ip in ips_string.split(',')]
 
         location = get_location(ips_list)
 
