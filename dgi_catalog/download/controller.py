@@ -21,15 +21,31 @@ from dgi_catalog.log import logging
 api = ns
 
 
-def get_address(ips_list):
-    ip_formatted = ips_list[0] if ips_list else request.remote_addr
+def get_location(ips_list):
+    """
+    Function to get the client's location
+    """
+    logging.info('Download.get_location()')
+    logging.info('Download.get_location() - ips_list: %s', ips_list)
 
-    logging.info('Download.get() - ip_formatted: %s', ip_formatted)
+    for ip in ips_list:
+        logging.info('Download.get_location() - ip: %s', ip)
 
-    try:
-        return DbIpCity.get(ip_formatted, api_key='free')
-    except Exception:
-        return IpLocation(request.remote_addr)
+        try:
+            # try to get the location based with a public IP
+            location = DbIpCity.get(ip, api_key='free')
+
+            logging.info('Download.get_location() - public IP was found.')
+
+            return location
+        except KeyError:
+            # if an exception occurs, a public IP was not found, then try again with another IP
+            continue
+
+    logging.info('Download.get_location() - public IP was not found, then private IP was chose.')
+
+    # if there is not one public IP, return a location object based on public IP, in other words, there is not any location information
+    return IpLocation(request.remote_addr)
 
 
 @api.route('/<path:path>')
@@ -38,7 +54,6 @@ class Download(APIResource):
     Download
     Full route: /api/download/<path>
     """
-
     download_business = DownloadBusiness()
 
     def get(self, path):
@@ -59,7 +74,7 @@ class Download(APIResource):
 
         ips_list = ip.split(',')
 
-        address = get_address(ips_list)
+        location = get_location(ips_list)
 
         # logging.debug('Download.get() - request.authorization: %s', request.authorization)
         # logging.debug('Download.get() - request.args: %s', request.args)
@@ -77,7 +92,7 @@ class Download(APIResource):
 
         parameters = {
             'path': path,
-            'address': address,
+            'location': location,
             'dataset': request.args.get('collection'),
             'scene_id': request.args.get('scene_id')
         }
