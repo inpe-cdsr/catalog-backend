@@ -10,6 +10,7 @@ from bdc_core.utils.flask import APIResource
 
 from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
+from ip2geotools.errors import InvalidRequestError
 
 from werkzeug.exceptions import Unauthorized
 
@@ -38,7 +39,7 @@ def get_location(ips_list):
             logging.info('Download.get_location() - public IP was found.')
 
             return location
-        except KeyError:
+        except (InvalidRequestError, KeyError):
             # if an exception occurs, a public IP was not found, then try again with another IP
             continue
 
