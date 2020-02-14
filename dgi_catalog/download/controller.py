@@ -7,12 +7,11 @@ Controllers
 
 from flask import request, send_from_directory
 from bdc_core.utils.flask import APIResource
+from werkzeug.exceptions import Unauthorized
 
 from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
 from ip2geotools.errors import InvalidRequestError
-
-from werkzeug.exceptions import Unauthorized
 
 from dgi_catalog.download import ns
 from dgi_catalog.download.business import DownloadBusiness
