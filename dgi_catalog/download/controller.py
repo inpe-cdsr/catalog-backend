@@ -20,6 +20,21 @@ from dgi_catalog.log import logging
 
 api = ns
 
+def get_address():
+    try:
+        logging.info('Download.get() - request.remote_addr: %s', request.remote_addr)
+
+        ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+
+        logging.info('Download.get() - ip: %s', ip)
+
+        ip_formatted = ip.split(',')[0] if ip else request.remote_addr
+
+        logging.info('Download.get() - ip_formatted: %s', ip_formatted)
+
+        return DbIpCity.get(ip_formatted, api_key='free')
+    except Exception:
+        return IpLocation(request.remote_addr)
 
 @api.route('/<path:path>')
 class Download(APIResource):
@@ -40,20 +55,7 @@ class Download(APIResource):
 
         logging.info('Download.get() - path: %s', path)
 
-        try:
-            logging.info('Download.get() - request.remote_addr: %s', request.remote_addr)
-
-            ip = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
-
-            logging.info('Download.get() - ip: %s', ip)
-
-            ip_formatted = ip.split(',')[0] if ip else request.remote_addr
-
-            logging.info('Download.get() - ip_formatted: %s', ip_formatted)
-
-            address = DbIpCity.get(ip_formatted, api_key='free')
-        except Exception:
-            address = IpLocation(request.remote_addr)
+        address = get_address()
 
         # logging.debug('Download.get() - request.authorization: %s', request.authorization)
         # logging.debug('Download.get() - request.args: %s', request.args)
