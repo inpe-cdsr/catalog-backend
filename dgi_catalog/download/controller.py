@@ -35,14 +35,14 @@ def get_location(ips_list):
             # try to get the location based with a public IP
             location = DbIpCity.get(ip, api_key='free')
 
-            logging.info('Download.get_location() - public IP was found.')
+            logging.info('Download.get_location() - public IP was found: {}'.format(ip))
 
             return location
         except (InvalidRequestError, KeyError):
             # if an exception occurs, a public IP was not found, then try again with another IP
             continue
 
-    logging.info('Download.get_location() - public IP was not found, then private IP was chose.')
+    logging.info('Download.get_location() - public IP was not found, then private IP was chose: {}'.format(request.remote_addr))
 
     # if there is not one public IP, return a location object based on public IP, in other words, there is not any location information
     return IpLocation(request.remote_addr)
