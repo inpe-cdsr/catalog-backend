@@ -16,6 +16,7 @@ from dgi_catalog.user.business import UserBusiness
 from dgi_catalog.user.parsers import validate, INSERT_USER_SCHEMA
 
 from dgi_catalog.common import jwt_decode
+from dgi_catalog.log import logging
 
 
 api = ns
@@ -51,6 +52,8 @@ class User(APIResource):
             Returns the user id. User id is the user e-mail
         """
 
+        logging.info('User.post()\n')
+
         body = request.data
 
         if body == b'':
@@ -64,6 +67,9 @@ class User(APIResource):
 
         if status is False:
             raise BadRequest(data)
+
+        logging.info('User.post() - fullname: %s', body['fullname'])
+        logging.info('User.post() - email: %s\n', body['email'])
 
         # insert user in the database
         result_id = user_business.insert_user(body)

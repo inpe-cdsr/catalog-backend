@@ -76,6 +76,10 @@ class Download(APIResource):
 
         location = get_location(ips_list)
 
+        # logging.debug('\n ... location: %s', location)
+        # logging.debug('\n ... location.to_json(): %s', location.to_json())
+        # logging.debug('\n ... location.to_json(): %s', location.to_csv(', '))
+
         # logging.debug('Download.get() - request.authorization: %s', request.authorization)
         # logging.debug('Download.get() - request.args: %s', request.args)
 
