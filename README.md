@@ -19,13 +19,13 @@ pyenv install 3.6.8
 Create a Python environment with the Python version above through pyenv-virtualenv:
 
 ```
-pyenv virtualenv 3.6.8 dgi_catalog_backend
+pyenv virtualenv 3.6.8 inpe-cdsr-catalog-backend
 ```
 
 Activate the environment:
 
 ```
-pyenv activate dgi_catalog_backend
+pyenv activate inpe-cdsr-catalog-backend
 ```
 
 Install the requirements:
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Activating environment variables and pyenv.
 
 ```
-pyenv activate dgi_catalog_backend
+pyenv activate inpe-cdsr-catalog-backend
 ```
 
 Run manage.py file using in test mode:
@@ -65,13 +65,13 @@ You can configure the environment to run through Docker containers. In order to 
 
 ```bash
 docker build -t inpe-cdsr-catalog-backend -f docker/dev.Dockerfile . --no-cache
-docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.2 -f docker/prod.Dockerfile . --no-cache
+docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.3 -f docker/prod.Dockerfile . --no-cache
 ```
 
 Push the Docker image to the registry:
 
 ```
-docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.2
+docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.3
 ```
 
 After that, you can run the application with  the following command:
@@ -82,5 +82,5 @@ docker run --interactive \
            --detach \
            --name tiler_app \
            --publish 5080:5000 \
-           dgi_catalog_backend:0.0.1
+           inpe-cdsr-catalog-backend:0.0.3
 ```
