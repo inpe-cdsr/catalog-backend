@@ -5,16 +5,17 @@
 Controllers
 """
 
-from flask import request, send_from_directory
+from flask import request, redirect
 from bdc_core.utils.flask import APIResource
 from werkzeug.exceptions import Unauthorized
 
 from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
-from ip2geotools.errors import InvalidRequestError
+from ip2geotools.errors import InvalidRequestError, ServiceError
 
 from dgi_catalog.download import ns
 from dgi_catalog.download.business import DownloadBusiness
+from dgi_catalog.environment import DOWNLOAD_URL, BASE_PATH
 from dgi_catalog.log import logging
 
 
@@ -22,9 +23,7 @@ api = ns
 
 
 def get_location(ips_list):
-    """
-    Function to get the client's location
-    """
+    """Function to get the client's location"""
     logging.info('Download.get_location()')
     logging.info('Download.get_location() - ips_list: %s', ips_list)
 
@@ -38,7 +37,7 @@ def get_location(ips_list):
             logging.info('Download.get_location() - public IP was found: {}'.format(ip))
 
             return location
-        except (InvalidRequestError, KeyError):
+        except (InvalidRequestError, ServiceError, KeyError):
             # if an exception occurs, a public IP was not found, then try again with another IP
             continue
 
@@ -94,8 +93,14 @@ class Download(APIResource):
         else:
             raise Unauthorized('Credentials are required!')
 
+        logging.info('DownloadBusiness.get() - BASE_PATH: %s', BASE_PATH)
+
+        # get the path to the file
+        # e.g: url = '/data/TIFF/.../CBERS_4_MUX_20191022_154_126_L2.tif'
+        urn = "{}/{}".format(BASE_PATH, path)
+
         parameters = {
-            'path': path,
+            'urn': urn,
             'location': location,
             'dataset': request.args.get('collection'),
             'scene_id': request.args.get('scene_id')
@@ -107,6 +112,10 @@ class Download(APIResource):
         parameters['username'] = username
         parameters['password'] = password
 
-        directory, filename = self.download_business.get_image(**parameters)
+        self.download_business.insert_statistics(**parameters)
 
-        return send_from_directory(directory, filename)
+        uri = DOWNLOAD_URL + urn
+
+        logging.debug('Download.get() - uri: %s', uri)
+
+        return redirect(uri)

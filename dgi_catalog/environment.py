@@ -41,4 +41,8 @@ MYSQL_DB_DATABASE = os_environ_get('MYSQL_DB_DATABASE', 'database')
 JWT_SECRET = os_environ_get('JWT_SECRET', 'MY_SECRET')
 JWT_ALGORITHM = os_environ_get('JWT_ALGORITHM', 'JWT_ALGORITHM')
 
+# download
+DOWNLOAD_URL = os_environ_get('DOWNLOAD_URL', 'http://localhost:8089')
+
+# other
 BASE_PATH = os_environ_get('BASE_PATH', '')
