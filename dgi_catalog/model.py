@@ -14,6 +14,7 @@ from werkzeug.exceptions import InternalServerError
 from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
                                     MYSQL_DB_HOST, MYSQL_DB_PORT, \
                                     MYSQL_DB_DATABASE
+from dgi_catalog.exception import DatabaseConnectionException
 from dgi_catalog.log import logging
 
 
@@ -54,13 +55,16 @@ class DatabaseConnection():
             ))
 
         except SQLAlchemyError as error:
+            error_message = 'An error occurred during database connection'
+
             logging.error('DatabaseConnection.connect() - error.code: %s', error.code)
             logging.error('DatabaseConnection.connect() - error.args: %s', error.args)
-            logging.error('DatabaseConnection.connect() - error.with_traceback: %s\n', error.with_traceback)
-            logging.error('DatabaseConnection.connect() - An error occurred during database connection: %s\n', error)
+            logging.error('DatabaseConnection.connect() - %s: %s\n', error_message, error)
+
+            error_message += ': ' + str(error.args)
 
             self.close()
-            raise InternalServerError(str(error))
+            raise InternalServerError(error_message)
 
     def close(self):
         if self.engine is not None:
@@ -74,10 +78,20 @@ class DatabaseConnection():
     # def rollback(self):
     #     self.engine.rollback()
 
+    def try_to_connect(self):
+        attempt = 0
+
+        # while engine is None, try to connect
+        while self.engine is None and attempt < 3:
+            attempt += 1
+            self.connect()
+
+        if attempt >= 3:
+            self.engine = None
+            raise DatabaseConnectionException('Connection was not opened to the database.')
+
     def execute(self, query, params=None, is_transaction=False):
         logging.info('DatabaseConnection.execute()')
-
-        self.connect()
 
         # sometimes there are a lot of blank spaces, then I remove it
         query = query.replace('            ', '')
@@ -94,6 +108,8 @@ class DatabaseConnection():
                 query_text = text(query)
 
             logging.info('DatabaseConnection.execute() - query_text: %s', query_text)
+
+            self.try_to_connect()
 
             # cursor.execute(query, params=params)
             result = self.engine.execute(query_text, params)
@@ -117,14 +133,16 @@ class DatabaseConnection():
                 return str(result.lastrowid)
 
         except SQLAlchemyError as error:
+            # self.rollback()
+            error_message = 'An error occurred during query execution'
+
             logging.error('DatabaseConnection.execute() - error.code: %s', error.code)
             logging.error('DatabaseConnection.execute() - error.args: %s', error.args)
-            logging.error('DatabaseConnection.execute() - error.with_traceback: %s\n', error.with_traceback)
-            logging.error('DatabaseConnection.execute() - An error occurred during database connection: %s\n', error)
+            logging.error('DatabaseConnection.execute() - %s: %s\n', error_message, error)
 
-            # self.rollback()
-            logging.error('An error occurred during query execution: %s', error)
-            raise InternalServerError(str(error))
+            error_message += ': ' + str(error.args)
+
+            raise InternalServerError(error_message)
 
         # finally is always executed (both at try and except)
         finally:

@@ -15,6 +15,7 @@ from flask_restplus import Resource as APIResource
 from dgi_catalog.auth import ns
 from dgi_catalog.auth.business import AuthBusiness
 from dgi_catalog.auth.parsers import validate
+from dgi_catalog.log import logging
 
 
 api = ns
@@ -44,6 +45,7 @@ class Login(APIResource):
         string
             Token related to the logged user
         """
+        logging.error('Login.post()\n')
 
         body = request.data
 
@@ -59,8 +61,13 @@ class Login(APIResource):
         if status is False:
             raise BadRequest(data)
 
+        logging.error('Login.post() - data[\'email\']: %s', data['email'])
+
         # validate user login
         token, user_info = auth_business.login(data['email'], data['password'])
+
+        # logging.error('Login.post() - user_info[\'userId\']: %s', user_info['userId'])
+        # logging.error('Login.post() - user_info[\'email\']: %s', user_info['email'])
 
         # if there is not a token (i.e. empty string), then raise an error
         if not token or not user_info:
