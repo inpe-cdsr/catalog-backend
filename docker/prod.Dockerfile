@@ -1,4 +1,8 @@
-FROM brazildatacube/base:0.1
+FROM python:3.7-slim-buster
+
+RUN apt-get update -y \
+    && apt-get install -y gcc libmariadb-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD . /app
 
