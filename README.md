@@ -65,13 +65,13 @@ You can configure the environment to run through Docker containers. In order to 
 
 ```bash
 docker build -t inpe-cdsr-catalog-backend -f docker/dev.Dockerfile . --no-cache
-docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.3 -f docker/prod.Dockerfile . --no-cache
+docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.4 -f docker/prod.Dockerfile . --no-cache
 ```
 
 Push the Docker image to the registry:
 
 ```
-docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.3
+docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.4
 ```
 
 After that, you can run the application with  the following command:
@@ -82,5 +82,5 @@ docker run --interactive \
            --detach \
            --name tiler_app \
            --publish 5080:5000 \
-           inpe-cdsr-catalog-backend:0.0.3
+           inpe-cdsr-catalog-backend:0.0.4
 ```

@@ -9,7 +9,8 @@ from json import loads
 from flask import request
 from flask import Response
 from werkzeug.exceptions import BadRequest, NotFound
-from bdc_core.utils.flask import APIResource
+# from bdc_core.utils.flask import APIResource
+from flask_restplus import Resource as APIResource
 
 from dgi_catalog.user import ns
 from dgi_catalog.user.business import UserBusiness

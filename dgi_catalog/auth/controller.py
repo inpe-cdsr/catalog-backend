@@ -9,7 +9,8 @@ from json import loads, dumps
 from flask import request
 from flask import Response
 from werkzeug.exceptions import BadRequest, InternalServerError
-from bdc_core.utils.flask import APIResource
+# from bdc_core.utils.flask import APIResource
+from flask_restplus import Resource as APIResource
 
 from dgi_catalog.auth import ns
 from dgi_catalog.auth.business import AuthBusiness

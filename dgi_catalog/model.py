@@ -2,13 +2,18 @@
 DGI Catalog
 """
 
-from mysql.connector import connect, errorcode, Error
 from datetime import date, datetime
 
-from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+# from mysql.connector import connect, errorcode, Error
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql import text
+
+from werkzeug.exceptions import InternalServerError
 
 from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
-                                    MYSQL_DB_HOST, MYSQL_DB_DATABASE
+                                    MYSQL_DB_HOST, MYSQL_DB_PORT, \
+                                    MYSQL_DB_DATABASE
 from dgi_catalog.log import logging
 
 
@@ -39,66 +44,90 @@ class DatabaseConnection():
     # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 
     def __init__(self):
-        self.connection = None
-
-    def close(self):
-        self.connection.close()
+        self.engine = None
 
     def connect(self):
         try:
-            self.connection = connect(user=MYSQL_DB_USER, password=MYSQL_DB_PASSWORD,
-                                      host=MYSQL_DB_HOST, database=MYSQL_DB_DATABASE)
+            self.engine = create_engine('mysql://{}:{}@{}:{}/{}'.format(
+                MYSQL_DB_USER, MYSQL_DB_PASSWORD, MYSQL_DB_HOST,
+                MYSQL_DB_PORT, MYSQL_DB_DATABASE
+            ))
 
-        except Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print('Access was denied to your credentials.')
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print('Database does not exist.')
-            else:
-                print('An error occurred during database connection: %s', err)
+        except SQLAlchemyError as error:
+            logging.error('DatabaseConnection.connect() - error.code: %s', error.code)
+            logging.error('DatabaseConnection.connect() - error.args: %s', error.args)
+            logging.error('DatabaseConnection.connect() - error.with_traceback: %s\n', error.with_traceback)
+            logging.error('DatabaseConnection.connect() - An error occurred during database connection: %s\n', error)
 
             self.close()
+            raise InternalServerError(str(error))
 
-    def commit(self):
-        self.connection.commit()
+    def close(self):
+        if self.engine is not None:
+            self.engine.dispose()
 
-    def rollback(self):
-        self.connection.rollback()
+        self.engine = None
+
+    # def commit(self):
+    #     self.engine.commit()
+
+    # def rollback(self):
+    #     self.engine.rollback()
 
     def execute(self, query, params=None, is_transaction=False):
         logging.info('DatabaseConnection.execute()')
 
         self.connect()
-        cursor = self.connection.cursor(dictionary=True)
 
-        logging.info('DatabaseConnection.execute() - query: %s', query)
+        # sometimes there are a lot of blank spaces, then I remove it
+        query = query.replace('            ', '')
+
+        # logging.info('DatabaseConnection.execute() - query: %s', query)
         # logging.debug('DatabaseConnection.execute() - params: %s', params)
         logging.info('DatabaseConnection.execute() - is_transaction: %s', is_transaction)
 
         try:
-            cursor.execute(query, params=params)
-
             # if query is a transaction statement, then commit the changes
             if is_transaction:
-                self.commit()
-
-            # if there are rows, then return them (SELECT operation)
-            if cursor.with_rows:
-                return cursor.fetchall()
-            # INSERT, UPDATE and DELETE operations need to be committed
+                query_text = text(query).execution_options(autocommit=True)
             else:
+                query_text = text(query)
+
+            logging.info('DatabaseConnection.execute() - query_text: %s', query_text)
+
+            # cursor.execute(query, params=params)
+            result = self.engine.execute(query_text, params)
+
+            logging.info('DatabaseConnection.execute() - result.returns_rows: %s', result.returns_rows)
+            logging.info('DatabaseConnection.execute() - result.rowcount: %s', result.rowcount)
+            logging.info('DatabaseConnection.execute() - result.lastrowid: %s', result.lastrowid)
+
+            if result.returns_rows:
+                # SELECT clause
+                rows = result.fetchall()
+                rows = [dict(row) for row in rows]
+
+                # logging.info('DatabaseConnection.execute() - rows: \n%s\n', rows)
+
+                return rows
+            else:
+                # INSERT, UPDATE and DELETE operations need to be committed
                 # if 'query' was a 'INSERT' statement, then it returns the inserted record 'id',
                 # else it returns '0'
-                return str(cursor.lastrowid)
+                return str(result.lastrowid)
 
-        except Error as error:
-            self.rollback()
+        except SQLAlchemyError as error:
+            logging.error('DatabaseConnection.execute() - error.code: %s', error.code)
+            logging.error('DatabaseConnection.execute() - error.args: %s', error.args)
+            logging.error('DatabaseConnection.execute() - error.with_traceback: %s\n', error.with_traceback)
+            logging.error('DatabaseConnection.execute() - An error occurred during database connection: %s\n', error)
+
+            # self.rollback()
             logging.error('An error occurred during query execution: %s', error)
-            raise BadRequest(str(error))
+            raise InternalServerError(str(error))
 
         # finally is always executed (both at try and except)
         finally:
-            cursor.close()
             self.close()
             # print('Database connection was closed.')
 
@@ -109,10 +138,10 @@ class DatabaseConnection():
 
         query = '''
             SELECT * FROM User
-            WHERE email=%(email)s AND password=%(password)s
+            WHERE email=:email AND password=:password
         '''
 
-        params = { 'email': email, 'password': mysql_old_password(password) }
+        params = {'email': email, 'password': mysql_old_password(password)}
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
@@ -124,7 +153,7 @@ class DatabaseConnection():
 
         query = '''
             SELECT * FROM User
-            WHERE email=%(email)s
+            WHERE email=:email
         '''
 
         params = { 'email': email }
@@ -134,8 +163,7 @@ class DatabaseConnection():
 
     def insert_user(self, email=None, password=None, fullname='', cnpjCpf='',
                     areaCode='', phone='', company='', companyType='',
-                    activity='', userType='', addressId=None,
-                    userStatus='', marlin=0):
+                    activity='', userType='', addressId=None, userStatus=''):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
         query = '''
@@ -143,12 +171,12 @@ class DatabaseConnection():
                 userId, email, password, fullname, CNPJ_CPF,
                 areaCode, phone, company, companyType,
                 activity, userType, registerDate, addressId,
-                userStatus, marlin
+                userStatus
             ) VALUES (
-                %(userId)s, %(email)s, %(password)s, %(fullname)s, %(cnpjCpf)s,
-                %(areaCode)s, %(phone)s, %(company)s, %(companyType)s,
-                %(activity)s,  %(userType)s, CURRENT_DATE(), %(addressId)s,
-                %(userStatus)s, %(marlin)s
+                :userId, :email, :password, :fullname, :cnpjCpf,
+                :areaCode, :phone, :company, :companyType,
+                :activity,  :userType, CURRENT_DATE(), :addressId,
+                :userStatus
             )
         '''
 
@@ -165,8 +193,7 @@ class DatabaseConnection():
             'activity': activity,
             'userType': userType,
             'addressId': addressId,
-            'userStatus': userStatus,
-            'marlin': marlin
+            'userStatus': userStatus
         }
 
         self.execute(query, params, is_transaction=True)
@@ -186,8 +213,8 @@ class DatabaseConnection():
                 country, latitude, longitude, Dataset,
                 date
             ) VALUES (
-                %(user_id)s, %(scene_id)s, %(path)s, %(ip)s, %(region)s,
-                %(country)s, %(latitude)s, %(longitude)s, %(dataset)s,
+                :user_id, :scene_id, :path, :ip, :region,
+                :country, :latitude, :longitude, :dataset,
                 NOW()
             )
         '''
@@ -216,8 +243,8 @@ class DatabaseConnection():
                 userId, cep, street, number, city,
                 state, country, addressType, CNPJ_CPF
             ) VALUES (
-                %(userId)s, %(cep)s, %(street)s, %(number)s, %(city)s,
-                %(state)s, %(country)s, "", ""
+                :userId, :cep, :street, :number, :city,
+                :state, :country, "", ""
             )
         '''
 
@@ -238,7 +265,7 @@ class DatabaseConnection():
     def delete_user(self, user_id):
         query = '''
             DELETE FROM User
-            WHERE userId=%(user_id)s;
+            WHERE userId=:user_id;
         '''
 
         params = {

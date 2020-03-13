@@ -2,7 +2,8 @@
 Controllers
 """
 
-from bdc_core.utils.flask import APIResource
+# from bdc_core.utils.flask import APIResource
+from flask_restplus import Resource as APIResource
 
 from dgi_catalog.status import ns
 from dgi_catalog.manifest import version, provider

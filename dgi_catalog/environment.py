@@ -35,6 +35,7 @@ ENV = os_environ_get('ENV', 'debug')
 MYSQL_DB_USER = os_environ_get('MYSQL_DB_USER', 'test')
 MYSQL_DB_PASSWORD = os_environ_get('MYSQL_DB_PASSWORD', 'test')
 MYSQL_DB_HOST = os_environ_get('MYSQL_DB_HOST', 'localhost')
+MYSQL_DB_PORT = os_environ_get('MYSQL_DB_PORT', '3306')
 MYSQL_DB_DATABASE = os_environ_get('MYSQL_DB_DATABASE', 'database')
 
 # JWT
