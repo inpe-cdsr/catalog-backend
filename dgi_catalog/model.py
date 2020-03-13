@@ -87,7 +87,7 @@ class DatabaseConnection():
             self.connect()
 
         if attempt >= 3:
-            self.engine = None
+            self.close()
             raise DatabaseConnectionException('Connection was not opened to the database.')
 
     def execute(self, query, params=None, is_transaction=False):
@@ -220,7 +220,7 @@ class DatabaseConnection():
         return email
 
     def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None,
-                          country=None, region=None, latitude=None, longitude=None, dataset=None):
+                          country=None, region=None, latitude=None, longitude=None):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
         logging.info('DatabaseConnection.insert_statistics()')
@@ -228,11 +228,11 @@ class DatabaseConnection():
         query = '''
             INSERT INTO Download (
                 userId, sceneId, path, ip, region,
-                country, latitude, longitude, Dataset,
+                country, latitude, longitude,
                 date
             ) VALUES (
                 :user_id, :scene_id, :path, :ip, :region,
-                :country, :latitude, :longitude, :dataset,
+                :country, :latitude, :longitude,
                 NOW()
             )
         '''
@@ -245,8 +245,7 @@ class DatabaseConnection():
             'region': region,
             'country': country,
             'latitude': latitude,
-            'longitude': longitude,
-            'dataset': dataset
+            'longitude': longitude
         }
 
         self.execute(query, params, is_transaction=True)
