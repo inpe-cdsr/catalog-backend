@@ -14,6 +14,7 @@ from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
 from ip2geotools.errors import InvalidRequestError, ServiceError
 
+# from dgi_catalog.cdsr_ip import CDSRIP
 from dgi_catalog.download import ns
 from dgi_catalog.download.business import DownloadBusiness
 from dgi_catalog.environment import DOWNLOAD_URL, BASE_PATH
