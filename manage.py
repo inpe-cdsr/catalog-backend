@@ -51,12 +51,16 @@ def test():
     """Run the unit tests."""
 
     import pytest
+    from logging import disable, CRITICAL
+
+    # disable logging during tests
+    # comment this line if you want to show the logging
+    disable(CRITICAL)
 
     pytest.main(["-v",
-                 "--cov-report",
-                 "html",
-                 "--cov-report",
-                 "annotate",
+                 "--cov-report", "term",
+                 "--cov-report", "html",
+                 "--cov-report", "annotate",
                  "--cov=dgi_catalog",
                  "-s",
                  "tests/"])

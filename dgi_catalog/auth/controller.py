@@ -9,7 +9,6 @@ from json import loads, dumps
 from flask import request
 from flask import Response
 from werkzeug.exceptions import BadRequest, InternalServerError
-# from bdc_core.utils.flask import APIResource
 from flask_restplus import Resource as APIResource
 
 from dgi_catalog.auth import ns
@@ -45,7 +44,7 @@ class Login(APIResource):
         string
             Token related to the logged user
         """
-        logging.error('Login.post()\n')
+        logging.info('Login.post()\n')
 
         body = request.data
 
@@ -61,13 +60,13 @@ class Login(APIResource):
         if status is False:
             raise BadRequest(data)
 
-        logging.error('Login.post() - data[\'email\']: %s', data['email'])
+        logging.info('Login.post() - data[\'email\']: %s', data['email'])
 
         # validate user login
         token, user_info = auth_business.login(data['email'], data['password'])
 
-        # logging.error('Login.post() - user_info[\'userId\']: %s', user_info['userId'])
-        # logging.error('Login.post() - user_info[\'email\']: %s', user_info['email'])
+        # logging.info('Login.post() - user_info[\'userId\']: %s', user_info['userId'])
+        # logging.info('Login.post() - user_info[\'email\']: %s', user_info['email'])
 
         # if there is not a token (i.e. empty string), then raise an error
         if not token or not user_info:

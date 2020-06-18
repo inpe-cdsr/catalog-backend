@@ -7,6 +7,7 @@ from random import randrange
 from dgi_catalog import app as dgi_catalog_app
 
 
+dgi_catalog_app.testing = True
 app = dgi_catalog_app.test_client()
 
 URL = '/api/user/'
@@ -14,15 +15,13 @@ URL_LOGIN = '/api/auth/login'
 
 
 class TestCatalogUser(TestCase):
-    """
-    TestCatalogUser
-    """
+    """TestCatalogUser"""
 
     def test__post_delete__catalog_user__200_success(self):
         """
         TestCatalogUser.test__post_delete__catalog_user__200_success
 
-        Test the creation and deletion of a user
+        Test the user creation and deletion
         """
 
         random_number = randrange(9999999)
@@ -39,7 +38,7 @@ class TestCatalogUser(TestCase):
             'email': email, 'password': password, 'fullname': 'Test',
             'cnpjCpf': '123456', 'areaCode': '12', 'phone': '1452-2563',
             'company': 'Abc', 'companyType': 'image processing',
-            'activity': 'developer'
+            'activity': 'developer', 'addressId': 3,
             #'userType': '', 'userStatus':  '', 'marlin': 0
         }
 
@@ -77,30 +76,28 @@ class TestCatalogUser(TestCase):
 
 
 class TestCatalogUserError(TestCase):
-    """
-    TestCatalogUserError
-    """
+    """TestCatalogUserError"""
 
     def test__post__catalog_user__400_bad_request(self):
         """
         TestCatalogUserError.test__post__catalog_user__400_bad_request
 
-        Test the creation of a user
+        Test the user creation
         """
 
         # 'addressId = 3' is a default address to test
         body = {
-            'email': 'test@localhost.com', 'password': 'test', 'fullname': 'Test',
-            'cnpjCpf': '123456', 'areaCode': '12', 'phone': '1452-2563', 'company': 'Abc',
-            'companyType': '', 'activity': 'developer',
-            # 'userType': '',
-            'addressId': 3,
-            # 'userStatus':  '',
-            # 'marlin': 0
+            'email': 'test@localhost.com', 'password': 'test',
+            'fullname': 'Test', 'cnpjCpf': '123456', 'areaCode': '12',
+            'phone': '1452-2563', 'company': 'Abc', 'companyType': '',
+            'activity': 'developer', 'addressId': 3,
+            # 'userType': '', 'userStatus':  '', 'marlin': 0
         }
 
         response = app.post(URL, data=dumps(body))
 
         self.assertEqual(400, response.status_code)
-        self.assertNotEqual("1062 (23000): Duplicate entry 'test_user@test_user.com' for key 'PRIMARY'",
-                            loads(response.data))
+        self.assertNotEqual(
+            "1062 (23000): Duplicate entry 'test_user@test_user.com' for key 'PRIMARY'",
+            loads(response.data)
+        )

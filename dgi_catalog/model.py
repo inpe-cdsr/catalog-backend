@@ -114,16 +114,17 @@ class DatabaseConnection():
             # cursor.execute(query, params=params)
             result = self.engine.execute(query_text, params)
 
-            logging.info('DatabaseConnection.execute() - result.returns_rows: %s', result.returns_rows)
-            logging.info('DatabaseConnection.execute() - result.rowcount: %s', result.rowcount)
-            logging.info('DatabaseConnection.execute() - result.lastrowid: %s', result.lastrowid)
+            logging.info('DatabaseConnection.execute() - returns_rows: %s', result.returns_rows)
+            logging.info('DatabaseConnection.execute() - rowcount: %s', result.rowcount)
+            logging.info('DatabaseConnection.execute() - lastrowid: %s', result.lastrowid)
+            # logging.debug('DatabaseConnection.execute() - result: %s', result)
 
             if result.returns_rows:
                 # SELECT clause
                 rows = result.fetchall()
                 rows = [dict(row) for row in rows]
 
-                # logging.info('DatabaseConnection.execute() - rows: \n%s\n', rows)
+                # logging.debug('DatabaseConnection.execute() - rows: \n%s\n', rows)
 
                 return rows
             else:

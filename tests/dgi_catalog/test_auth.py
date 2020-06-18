@@ -10,7 +10,7 @@ from json import loads, dumps
 
 from dgi_catalog import app as dgi_catalog_app
 
-from test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
+from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
 app = dgi_catalog_app.test_client()
@@ -28,7 +28,7 @@ class TestCatalogAuthLoginSuccess(TestCase):
         TestCatalogAuthLoginSuccess.test__post__catalog_auth_login
         """
 
-        body = { 'email': TEST_USER_EMAIL, 'password': TEST_USER_PASSWORD }
+        body = {'email': TEST_USER_EMAIL, 'password': TEST_USER_PASSWORD}
 
         response = app.post(URL, data=dumps(body))
 

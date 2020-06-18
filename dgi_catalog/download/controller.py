@@ -6,7 +6,6 @@ Controllers
 """
 
 from flask import request, redirect
-# from bdc_core.utils.flask import APIResource
 from flask_restplus import Resource as APIResource
 from werkzeug.exceptions import Unauthorized
 

@@ -14,7 +14,7 @@ class AuthBusiness():
         self.db_connection = DatabaseConnection()
 
     def login(self, email, password):
-        logging.error('AuthBusiness.login()\n')
+        logging.info('AuthBusiness.login()\n')
 
         result = self.db_connection.select_user(email=email, password=password)
 
@@ -25,7 +25,7 @@ class AuthBusiness():
         # get the only one available result
         result = result[0]
 
-        logging.error('AuthBusiness.login() - result[\'email\']: %s', result['email'])
+        logging.info('AuthBusiness.login() - result[\'email\']: %s', result['email'])
 
         encoded_token = jwt_encode(result)
 
