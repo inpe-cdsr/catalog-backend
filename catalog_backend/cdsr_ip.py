@@ -22,6 +22,26 @@ class CDSRIP:
              'country,countryCode,continent,continentCode,zip,timezone'
 
     @staticmethod
+    def get_location_structure(ip=None):
+        """get_location_structure method"""
+
+        return {
+            "ip": ip,
+            "longitude": None,
+            "latitude": None,
+            "city": None,
+            "district": None,
+            "region": None,
+            "region_code": None,
+            "country": None,
+            "country_code": None,
+            "continent": None,
+            "continent_code": None,
+            "zip_code": None,
+            "time_zone": None
+        }
+
+    @staticmethod
     def get_location(ip=None):
         """get_location method"""
 
@@ -53,6 +73,3 @@ class CDSRIP:
             "zip_code": response['zip'],
             "time_zone": response['timezone']
         }
-
-# from cdsr_ip import CDSRIP
-# CDSRIP.get_location('189.29.126.49')

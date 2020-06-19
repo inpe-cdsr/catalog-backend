@@ -215,8 +215,10 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
-    def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None,
-                          country=None, region=None, latitude=None, longitude=None):
+    def insert_statistics(self, user_id=None, scene_id=None, path=None,
+                          ip=None, longitude=None, latitude=None, city=None, district=None,
+                          region=None, region_code=None, country=None, country_code=None,
+                          continent=None, continent_code=None, zip_code=None, time_zone=None):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
         logging.info('DatabaseConnection.insert_statistics()')

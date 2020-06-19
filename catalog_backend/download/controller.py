@@ -5,12 +5,9 @@
 
 from flask import request, redirect
 from flask_restplus import Resource as APIResource
-from ip2geotools.databases.noncommercial import DbIpCity
-from ip2geotools.models import IpLocation
-from ip2geotools.errors import InvalidRequestError, ServiceError
 from werkzeug.exceptions import Unauthorized
 
-# from catalog_backend.cdsr_ip import CDSRIP
+from catalog_backend.cdsr_ip import CDSRIP, CDSRIPException
 from catalog_backend.download import ns
 from catalog_backend.download.business import DownloadBusiness
 from catalog_backend.environment import DOWNLOAD_URL, BASE_PATH
@@ -31,19 +28,19 @@ def get_location(ips_list):
 
         try:
             # try to get the location based with a public IP
-            location = DbIpCity.get(ip, api_key='free')
+            location = CDSRIP.get_location(ip)
 
             logging.info('Download.get_location() - public IP was found: {}'.format(ip))
 
             return location
-        except (InvalidRequestError, ServiceError, KeyError):
+        except (CDSRIPException, KeyError):
             # if an exception occurs, a public IP was not found, then try again with another IP
             continue
 
     logging.info('Download.get_location() - public IP was not found, then private IP was chose: {}'.format(request.remote_addr))
 
     # if there is not one public IP, return a location object based on public IP, in other words, there is not any location information
-    return IpLocation(request.remote_addr)
+    return CDSRIP.get_location_structure(request.remote_addr)
 
 
 @api.route('/<path:path>')
@@ -65,7 +62,6 @@ class Download(APIResource):
         logging.info('Download.get()')
 
         logging.info('Download.get() - path: %s', path)
-
         logging.info('Download.get() - request.remote_addr: %s', request.remote_addr)
 
         ips_string = request.headers.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
@@ -76,9 +72,7 @@ class Download(APIResource):
 
         location = get_location(ips_list)
 
-        # logging.debug('\n ... location: %s', location)
-        # logging.debug('\n ... location.to_json(): %s', location.to_json())
-        # logging.debug('\n ... location.to_json(): %s', location.to_csv(', '))
+        logging.info('Download.get() - location: %s', location)
 
         # logging.debug('Download.get() - request.authorization: %s', request.authorization)
         # logging.debug('Download.get() - request.args: %s', request.args)
