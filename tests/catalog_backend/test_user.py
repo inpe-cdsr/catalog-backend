@@ -1,14 +1,14 @@
 # pylint: disable-msg=C0103
 
-from unittest import TestCase
 from json import loads, dumps
 from random import randrange
+from unittest import TestCase
 
-from dgi_catalog import app as dgi_catalog_app
+from catalog_backend import app as catalog_backend_app
 
 
-dgi_catalog_app.testing = True
-app = dgi_catalog_app.test_client()
+catalog_backend_app.testing = True
+app = catalog_backend_app.test_client()
 
 URL = '/api/user/'
 URL_LOGIN = '/api/auth/login'

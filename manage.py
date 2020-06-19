@@ -6,8 +6,8 @@ import os
 # from pathlib import Path
 from flask_script import Manager
 
-from dgi_catalog import app
-from dgi_catalog.environment import SERVER_HOST, SERVER_PORT, DEBUG_MODE
+from catalog_backend import app
+from catalog_backend.environment import SERVER_HOST, SERVER_PORT, DEBUG_MODE
 
 
 manager = Manager(app)
@@ -61,7 +61,7 @@ def test():
                  "--cov-report", "term",
                  "--cov-report", "html",
                  "--cov-report", "annotate",
-                 "--cov=dgi_catalog",
+                 "--cov=catalog_backend",
                  "-s",
                  "tests/"])
 

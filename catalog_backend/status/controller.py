@@ -1,11 +1,9 @@
-"""
-Controllers
-"""
+"""Controllers"""
 
 from flask_restplus import Resource as APIResource
 
-from dgi_catalog.status import ns
-from dgi_catalog.manifest import version, provider
+from catalog_backend.manifest import version, provider
+from catalog_backend.status import ns
 
 
 api = ns
@@ -32,8 +30,8 @@ class Status(APIResource):
         """
 
         return {
-            "dgi_catalog_version": version,
-            "dgi_catalog_provider": provider,
+            "catalog_backend_version": version,
+            "catalog_backend_provider": provider,
             "base": "http://localhost:5000/catalog",
             "description": "API - DGI Catalog (http://localhost:5000)"
         }

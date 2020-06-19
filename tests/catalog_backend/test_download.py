@@ -2,13 +2,12 @@
 # from werkzeug.exceptions import BadRequest
 
 from unittest import TestCase
-# from json import loads, dumps
 
-from dgi_catalog import app as dgi_catalog_app
+from catalog_backend import app as catalog_backend_app
 
 
-dgi_catalog_app.testing = True
-app = dgi_catalog_app.test_client()
+catalog_backend_app.testing = True
+app = catalog_backend_app.test_client()
 
 '''
 class TestCatalogDownload(TestCase):

@@ -1,12 +1,10 @@
-"""
-business.py
-"""
+"""business.py"""
 
 from werkzeug.exceptions import NotFound
 
-from dgi_catalog.model import DatabaseConnection
-from dgi_catalog.common import jwt_encode
-from dgi_catalog.log import logging
+from catalog_backend.common import jwt_encode
+from catalog_backend.log import logging
+from catalog_backend.model import DatabaseConnection
 
 
 class AuthBusiness():

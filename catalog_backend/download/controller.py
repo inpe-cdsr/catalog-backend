@@ -1,23 +1,20 @@
 # disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
 # pylint: disable=C0301
 
-"""
-Controllers
-"""
+"""Controllers"""
 
 from flask import request, redirect
 from flask_restplus import Resource as APIResource
-from werkzeug.exceptions import Unauthorized
-
 from ip2geotools.databases.noncommercial import DbIpCity
 from ip2geotools.models import IpLocation
 from ip2geotools.errors import InvalidRequestError, ServiceError
+from werkzeug.exceptions import Unauthorized
 
-# from dgi_catalog.cdsr_ip import CDSRIP
-from dgi_catalog.download import ns
-from dgi_catalog.download.business import DownloadBusiness
-from dgi_catalog.environment import DOWNLOAD_URL, BASE_PATH
-from dgi_catalog.log import logging
+# from catalog_backend.cdsr_ip import CDSRIP
+from catalog_backend.download import ns
+from catalog_backend.download.business import DownloadBusiness
+from catalog_backend.environment import DOWNLOAD_URL, BASE_PATH
+from catalog_backend.log import logging
 
 
 api = ns
@@ -25,6 +22,7 @@ api = ns
 
 def get_location(ips_list):
     """Function to get the client's location"""
+
     logging.info('Download.get_location()')
     logging.info('Download.get_location() - ips_list: %s', ips_list)
 
@@ -54,6 +52,7 @@ class Download(APIResource):
     Download
     Full route: /api/download/<path>
     """
+
     download_business = DownloadBusiness()
 
     def get(self, path):
@@ -62,6 +61,7 @@ class Download(APIResource):
         -------
         image/tif
         """
+
         logging.info('Download.get()')
 
         logging.info('Download.get() - path: %s', path)

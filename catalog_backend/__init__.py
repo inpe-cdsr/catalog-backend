@@ -7,14 +7,14 @@ from flask.logging import create_logger, logging
 
 from flask_cors import CORS
 
-from dgi_catalog.blueprint import blueprint
-from dgi_catalog.config import get_settings
+from catalog_backend.blueprint import blueprint
+from catalog_backend.config import get_settings
 
 
 def create_app(config):
     """
     Args:
-        config (string|dgi_catalog.config.Config) Config instance
+        config (string|catalog_backend.config.Config) Config instance
 
     Returns:
         Flask Application with config instance scope

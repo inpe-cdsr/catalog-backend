@@ -1,22 +1,19 @@
 # disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
 # pylint: disable=C0301
 
-"""
-Controllers
-"""
+"""Controllers"""
 
 from json import loads
+
 from flask import request
-from flask import Response
-from werkzeug.exceptions import BadRequest, NotFound
 from flask_restplus import Resource as APIResource
+from werkzeug.exceptions import BadRequest, NotFound
 
-from dgi_catalog.user import ns
-from dgi_catalog.user.business import UserBusiness
-from dgi_catalog.user.parsers import validate, INSERT_USER_SCHEMA
-
-from dgi_catalog.common import jwt_decode
-from dgi_catalog.log import logging
+from catalog_backend.common import jwt_decode
+from catalog_backend.log import logging
+from catalog_backend.user import ns
+from catalog_backend.user.business import UserBusiness
+from catalog_backend.user.parsers import validate, INSERT_USER_SCHEMA
 
 
 api = ns

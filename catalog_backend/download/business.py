@@ -1,12 +1,10 @@
-"""
-business.py
-"""
+"""business.py"""
 
 from werkzeug.exceptions import Forbidden
 
-from dgi_catalog.model import DatabaseConnection
-from dgi_catalog.environment import BASE_PATH
-from dgi_catalog.log import logging
+from catalog_backend.environment import BASE_PATH
+from catalog_backend.model import DatabaseConnection
+from catalog_backend.log import logging
 
 
 class DownloadBusiness():

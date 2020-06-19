@@ -1,21 +1,16 @@
-"""
-DGI Catalog
-"""
+"""DGI Catalog"""
 
 from datetime import date, datetime
-
-# from mysql.connector import connect, errorcode, Error
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql import text
-
 from werkzeug.exceptions import InternalServerError
 
-from dgi_catalog.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
+from catalog_backend.environment import MYSQL_DB_USER, MYSQL_DB_PASSWORD, \
                                     MYSQL_DB_HOST, MYSQL_DB_PORT, \
                                     MYSQL_DB_DATABASE
-from dgi_catalog.exception import DatabaseConnectionException
-from dgi_catalog.log import logging
+from catalog_backend.exception import DatabaseConnectionException
+from catalog_backend.log import logging
 
 
 def fix_rows(rows):

@@ -2,14 +2,14 @@
 # pylint: disable=C0301
 # pylint: disable-msg=C0103
 
-from unittest import TestCase
-# from json import loads, dumps
+# from unittest import TestCase
+# from json import loads
 
-from dgi_catalog import app as dgi_catalog_app
+from catalog_backend import app as catalog_backend_app
 
 
-dgi_catalog_app.testing = True
-app = dgi_catalog_app.test_client()
+catalog_backend_app.testing = True
+app = catalog_backend_app.test_client()
 
 URL = '/catalog/status/'
 
@@ -24,7 +24,7 @@ class TestCatalogStatusSuccess(TestCase):
         TestCatalogStatusSuccess.test__get__catalog_status
         """
 
-        expected = '{"dgi_catalog_version": version, "dgi_catalog_provider": provider, \
+        expected = '{"catalog_backend_version": version, "catalog_backend_provider": provider, \
         "base": "http://localhost:5000/catalog", \
         "description": "API - DGI Catalog (http://localhost:5000)"}'
 

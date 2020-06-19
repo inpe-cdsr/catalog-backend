@@ -1,12 +1,9 @@
-"""
-common.py
-"""
-
-from werkzeug.exceptions import BadRequest, InternalServerError
+"""common.py"""
 
 from jwt import encode as __jwt_encode__, decode as __jwt_decode__, DecodeError, InvalidAlgorithmError
+from werkzeug.exceptions import BadRequest
 
-from dgi_catalog.environment import JWT_SECRET, JWT_ALGORITHM
+from catalog_backend.environment import JWT_SECRET, JWT_ALGORITHM
 
 
 # JWT

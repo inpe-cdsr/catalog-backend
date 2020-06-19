@@ -1,31 +1,24 @@
-# disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
-# pylint: disable=C0301
-
 """test_auth.py file"""
 
-from unittest import TestCase
 from json import loads, dumps
+from unittest import TestCase
 
-from dgi_catalog import app as dgi_catalog_app
+from catalog_backend import app as catalog_backend_app
 
 from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
-dgi_catalog_app.testing = True
-app = dgi_catalog_app.test_client()
+catalog_backend_app.testing = True
+app = catalog_backend_app.test_client()
 
 URL = '/api/auth/login'
 
 
 class TestCatalogAuthLoginSuccess(TestCase):
-    """
-    TestCatalogAuthLoginSuccess
-    """
+    """TestCatalogAuthLoginSuccess"""
 
     def test__post__catalog_auth_login__200_success(self):
-        """
-        TestCatalogAuthLoginSuccess.test__post__catalog_auth_login
-        """
+        """TestCatalogAuthLoginSuccess.test__post__catalog_auth_login"""
 
         body = {'email': TEST_USER_EMAIL, 'password': TEST_USER_PASSWORD}
 
@@ -37,14 +30,10 @@ class TestCatalogAuthLoginSuccess(TestCase):
 
 
 class TestCatalogAuthLoginError(TestCase):
-    """
-    TestCatalogAuthLoginError
-    """
+    """TestCatalogAuthLoginError"""
 
     def test__post__catalog_auth_login__400_bad_request__request_data_is_empty(self):
-        """
-        TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__request_data_is_empty
-        """
+        """TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__request_data_is_empty"""
 
         response = app.post(URL)
 
@@ -54,9 +43,7 @@ class TestCatalogAuthLoginError(TestCase):
         self.assertEqual('Request data is empty.', body['message'])
 
     def test__post__catalog_auth_login__400_bad_request__required_field(self):
-        """
-        TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__required_field
-        """
+        """TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__required_field"""
 
         test_cases = [
             {
@@ -83,19 +70,17 @@ class TestCatalogAuthLoginError(TestCase):
             self.assertEqual(case['expected'], result['message'])
 
     def test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found(self):
-        """
-        TestCatalogAuthLoginError.test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found
-        """
+        """TestCatalogAuthLoginError.test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found"""
 
         test_cases = [
             {
-                'body': { 'email': 'invalid@email.com', 'password': 'invalid_password' }
+                'body': {'email': 'invalid@email.com', 'password': 'invalid_password'}
             },
             {
-                'body': { 'email': TEST_USER_EMAIL, 'password': 'invalid_password' }
+                'body': {'email': TEST_USER_EMAIL, 'password': 'invalid_password'}
             },
             {
-                'body': { 'email': 'invalid@email.com', 'password': TEST_USER_PASSWORD }
+                'body': {'email': 'invalid@email.com', 'password': TEST_USER_PASSWORD}
             }
         ]
 
