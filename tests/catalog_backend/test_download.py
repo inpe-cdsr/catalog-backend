@@ -1,5 +1,6 @@
-# pylint: disable-msg=C0103
-# from werkzeug.exceptions import BadRequest
+#!/usr/bin/env python3
+
+"""test_download.py test module"""
 
 from unittest import TestCase
 

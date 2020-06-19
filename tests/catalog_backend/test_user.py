@@ -1,4 +1,6 @@
-# pylint: disable-msg=C0103
+#!/usr/bin/env python3
+
+"""test_user.py test module"""
 
 from json import loads, dumps
 from random import randrange

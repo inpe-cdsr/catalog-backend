@@ -1,4 +1,6 @@
-"""test_auth.py file"""
+#!/usr/bin/env python3
+
+"""test_auth.py test module"""
 
 from json import loads, dumps
 from unittest import TestCase

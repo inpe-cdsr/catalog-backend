@@ -1,6 +1,6 @@
-# disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
-# pylint: disable=C0301
-# pylint: disable-msg=C0103
+#!/usr/bin/env python3
+
+"""test_status.py test module"""
 
 # from unittest import TestCase
 # from json import loads
