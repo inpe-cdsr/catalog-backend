@@ -1,9 +1,7 @@
 # disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
 # pylint: disable=C0301
 
-"""
-test_auth.py file
-"""
+"""test_auth.py file"""
 
 from unittest import TestCase
 from json import loads, dumps
@@ -13,6 +11,7 @@ from dgi_catalog import app as dgi_catalog_app
 from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
+dgi_catalog_app.testing = True
 app = dgi_catalog_app.test_client()
 
 URL = '/api/auth/login'

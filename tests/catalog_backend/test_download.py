@@ -7,6 +7,7 @@ from unittest import TestCase
 from dgi_catalog import app as dgi_catalog_app
 
 
+dgi_catalog_app.testing = True
 app = dgi_catalog_app.test_client()
 
 '''
