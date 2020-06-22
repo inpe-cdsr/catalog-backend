@@ -170,7 +170,7 @@ class DatabaseConnection():
             WHERE email=:email
         '''
 
-        params = { 'email': email }
+        params = {'email': email}
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
@@ -215,23 +215,78 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
-    def insert_statistics(self, user_id=None, scene_id=None, path=None,
-                          ip=None, longitude=None, latitude=None, city=None, district=None,
-                          region=None, region_code=None, country=None, country_code=None,
-                          continent=None, continent_code=None, zip_code=None, time_zone=None):
-        # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
+    def select_location(self, ip=None):
+        where = ''
 
+        if ip is not None and ip != '':
+            where = 'WHERE ip=:ip'
+
+        query = 'SELECT * FROM Location {};'.format(where)
+
+        params = {'ip': ip}
+
+        # execute the query and fix the resulted rows
+        return fix_rows(self.execute(query, params))
+
+    def insert_location(self, ip=None, longitude=None, latitude=None, city=None, district=None,
+                        region=None, region_code=None, country=None, country_code=None,
+                        continent=None, continent_code=None, zip_code=None, time_zone=None):
+
+        logging.info('DatabaseConnection.insert_location()')
+
+        # query = '''
+        #     INSERT INTO Location (
+        #         ip, longitude, latitude, city, district,
+        #         region, region_code, country, country_code,
+        #         continent, continent_code, zip_code, time_zone
+        #     ) VALUES (
+        #         :ip, :longitude, :latitude, :city, :district,
+        #         :region, :region_code, :country, :country_code,
+        #         :continent, :continent_code, :zip_code, :time_zone
+        #     );
+        # '''
+
+        # just insert the new location if the IP has not been already added in the database
+        query = '''
+            INSERT INTO Location (
+                ip, longitude, latitude, city, district,
+                region, region_code, country, country_code,
+                continent, continent_code, zip_code, time_zone
+            )
+            SELECT
+                :ip, :longitude, :latitude, :city, :district,
+                :region, :region_code, :country, :country_code,
+                :continent, :continent_code, :zip_code, :time_zone
+            FROM Location
+            WHERE ip != :ip;
+        '''
+
+        params = {
+            'ip': ip,
+            'longitude': longitude,
+            'latitude': latitude,
+            'city': city,
+            'district': district,
+            'region': region,
+            'region_code': region_code,
+            'country': country,
+            'country_code': country_code,
+            'continent': continent,
+            'continent_code': continent_code,
+            'zip_code': zip_code,
+            'time_zone': time_zone
+        }
+
+        self.execute(query, params, is_transaction=True)
+
+    def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None):
         logging.info('DatabaseConnection.insert_statistics()')
 
         query = '''
             INSERT INTO Download (
-                userId, sceneId, path, ip, region,
-                country, latitude, longitude,
-                date
+                userId, sceneId, path, ip, date
             ) VALUES (
-                :user_id, :scene_id, :path, :ip, :region,
-                :country, :latitude, :longitude,
-                NOW()
+                :user_id, :scene_id, :path, :ip, NOW()
             )
         '''
 
@@ -239,11 +294,7 @@ class DatabaseConnection():
             'user_id': user_id,
             'scene_id': scene_id,
             'path': path,
-            'ip': ip,
-            'region': region,
-            'country': country,
-            'latitude': latitude,
-            'longitude': longitude
+            'ip': ip
         }
 
         self.execute(query, params, is_transaction=True)
