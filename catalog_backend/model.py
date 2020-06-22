@@ -234,18 +234,6 @@ class DatabaseConnection():
 
         logging.info('DatabaseConnection.insert_location()')
 
-        # query = '''
-        #     INSERT INTO Location (
-        #         ip, longitude, latitude, city, district,
-        #         region, region_code, country, country_code,
-        #         continent, continent_code, zip_code, time_zone
-        #     ) VALUES (
-        #         :ip, :longitude, :latitude, :city, :district,
-        #         :region, :region_code, :country, :country_code,
-        #         :continent, :continent_code, :zip_code, :time_zone
-        #     );
-        # '''
-
         # just insert the new location if the IP has not been already added in the database
         query = '''
             INSERT INTO Location (
