@@ -245,8 +245,10 @@ class DatabaseConnection():
                 :ip, :longitude, :latitude, :city, :district,
                 :region, :region_code, :country, :country_code,
                 :continent, :continent_code, :zip_code, :time_zone
-            FROM Location
-            WHERE ip != :ip;
+            WHERE
+                (SELECT count(ip)
+                FROM Location
+                WHERE ip = :ip) = 0;
         '''
 
         params = {
