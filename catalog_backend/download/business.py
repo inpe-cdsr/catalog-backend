@@ -38,7 +38,7 @@ class DownloadBusiness():
 
             # if the location has already been added to the database, then I return it, [...]
             if location:
-                return location
+                return location[0]
 
             # [...] else I search the location by IP once
             try:
