@@ -1,9 +1,10 @@
-"""Manage"""
+#!/usr/bin/env python3
+
+"""manage.py"""
 
 import contextlib
 import os
 
-# from pathlib import Path
 from flask_script import Manager
 
 from catalog_backend import app

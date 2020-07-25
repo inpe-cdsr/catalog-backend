@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""log.py"""
+
 import logging
 
 from catalog_backend.environment import LOGGING_LEVEL

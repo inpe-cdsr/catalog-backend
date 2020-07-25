@@ -1,6 +1,6 @@
-"""
-Get environment variables
-"""
+#!/usr/bin/env python3
+
+"""Get environment variables"""
 
 from os import environ
 from logging import DEBUG, INFO

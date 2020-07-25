@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """DGI Catalog"""
 
 from datetime import date, datetime

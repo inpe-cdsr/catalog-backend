@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # disable pylint(line-too-long) (All codes: http://pylint-messages.wikidot.com/all-codes)
 # pylint: disable=C0301
 
@@ -46,11 +47,13 @@ class Download(APIResource):
         # logging.debug('Download.get() - request.authorization: %s', request.authorization)
         # logging.debug('Download.get() - request.args: %s', request.args)
 
-        if request.authorization:
-            credentials = request.authorization
-            username = credentials.username
-            password = credentials.password
-        elif request.args.get('key'):
+        # Nginx credentials
+        # if request.authorization:
+        #     credentials = request.authorization
+        #     username = credentials.username
+        #     password = credentials.password
+        # Url credentials
+        if request.args.get('key'):
             credentials = request.args['key'].split(':')
             username = credentials[0]
             password = credentials[1]

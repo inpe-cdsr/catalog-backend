@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 You can define these configurations and call using environment variable
 `ENVIRONMENT`. For example: `export ENVIRONMENT=ProductionConfig`

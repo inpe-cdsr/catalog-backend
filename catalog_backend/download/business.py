@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """business.py"""
 
 from flask import request
@@ -67,7 +69,7 @@ class DownloadBusiness():
 
         logging.info('DownloadBusiness.insert_statistics()')
 
-        logging.debug('DownloadBusiness.insert_statistics() - username: %s', username)
+        logging.info('DownloadBusiness.insert_statistics() - username: %s', username)
         # logging.debug('DownloadBusiness.insert_statistics() - password: %s', password)
         logging.info('DownloadBusiness.insert_statistics() - urn: %s', urn)
         logging.info('DownloadBusiness.insert_statistics() - scene_id: %s', scene_id)
