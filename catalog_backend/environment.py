@@ -45,5 +45,11 @@ JWT_ALGORITHM = os_environ_get('JWT_ALGORITHM', 'JWT_ALGORITHM')
 # download
 DOWNLOAD_URL = os_environ_get('DOWNLOAD_URL', 'http://localhost:8089')
 
+# e-mail sender
+EMAIL_SENDER_FROM = os_environ_get('EMAIL_SENDER_FROM', None)
+EMAIL_SENDER_FROM_PASSWORD = os_environ_get('EMAIL_SENDER_FROM_PASSWORD', None)
+EMAIL_SMTP_HOST = os_environ_get('EMAIL_SMTP_HOST', 'smtp.gmail.com')
+EMAIL_SMTP_PORT = os_environ_get('EMAIL_SMTP_PORT', 587)
+
 # other
 BASE_PATH = os_environ_get('BASE_PATH', '')

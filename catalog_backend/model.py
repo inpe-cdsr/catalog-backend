@@ -111,11 +111,12 @@ class DatabaseConnection():
             # cursor.execute(query, params=params)
             result = self.engine.execute(query_text, params)
 
-            logging.info('DatabaseConnection.execute() - returns_rows: %s', result.returns_rows)
+            # logging.info('DatabaseConnection.execute() - returns_rows: %s', result.returns_rows)
             logging.info('DatabaseConnection.execute() - rowcount: %s', result.rowcount)
             logging.info('DatabaseConnection.execute() - lastrowid: %s', result.lastrowid)
             # logging.debug('DatabaseConnection.execute() - result: %s', result)
 
+            # `returns_rows` means the query is a SELECT clause
             if result.returns_rows:
                 # SELECT clause
                 rows = result.fetchall()
@@ -152,12 +153,27 @@ class DatabaseConnection():
         # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
         # https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
 
-        query = '''
-            SELECT * FROM User
-            WHERE email=:email AND password=:password
-        '''
+        where = []
+        params = {}
 
-        params = {'email': email, 'password': mysql_old_password(password)}
+        logging.info('select_user() - email: %s', email)
+
+        if email is not None:
+            where.append('email=:email')
+            params['email'] = email
+
+        if password is not None:
+            where.append('password=:password')
+            params['password'] = mysql_old_password(password)
+
+        where = ' AND '.join(where)
+
+        if where != '':
+            where = 'WHERE {}'.format(where)
+
+        query = '''SELECT * FROM User {};'''.format(where)
+
+        logging.info('select_user() - query: %s', query)
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))

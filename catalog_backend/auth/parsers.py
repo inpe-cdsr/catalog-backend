@@ -11,6 +11,16 @@ def login():
         'password': {"type": "string", "empty": False, "required": True}
     }
 
+def forgot_password():
+    return {
+        'email': {
+            "type": "string",
+            "empty": False,
+            "required": True,
+            'regex': r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        }
+    }
+
 
 def validate(data, type_schema):
     schema = eval('{}()'.format(type_schema))
