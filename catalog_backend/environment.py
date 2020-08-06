@@ -42,8 +42,11 @@ MYSQL_DB_DATABASE = os_environ_get('MYSQL_DB_DATABASE', 'database')
 JWT_SECRET = os_environ_get('JWT_SECRET', 'MY_SECRET')
 JWT_ALGORITHM = os_environ_get('JWT_ALGORITHM', 'JWT_ALGORITHM')
 
-# download
-DOWNLOAD_URL = os_environ_get('DOWNLOAD_URL', 'http://localhost:8089')
+# URLs
+URL_DOWNLOAD = os_environ_get('URL_DOWNLOAD', 'http://localhost:8089/datastore')
+URL_CATALOG_RESET_PASSWORD = os_environ_get(
+    'URL_CATALOG_RESET_PASSWORD', 'http://localhost:8089/catalog/reset-password'
+)
 
 # e-mail sender
 EMAIL_SENDER_FROM = os_environ_get('EMAIL_SENDER_FROM', None)

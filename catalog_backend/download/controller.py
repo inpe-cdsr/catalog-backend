@@ -10,7 +10,7 @@ from werkzeug.exceptions import Unauthorized
 
 from catalog_backend.download import ns
 from catalog_backend.download.business import DownloadBusiness
-from catalog_backend.environment import DOWNLOAD_URL, BASE_PATH
+from catalog_backend.environment import URL_DOWNLOAD, BASE_PATH
 from catalog_backend.log import logging
 
 
@@ -81,7 +81,7 @@ class Download(APIResource):
 
         self.download_business.insert_statistics(**parameters)
 
-        uri = DOWNLOAD_URL + urn
+        uri = URL_DOWNLOAD + urn
 
         logging.debug('Download.get() - uri: %s', uri)
 

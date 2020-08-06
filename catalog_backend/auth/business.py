@@ -1,8 +1,10 @@
 """business.py"""
 
+from secrets import token_urlsafe
 from werkzeug.exceptions import NotFound
 
 from catalog_backend.common import jwt_encode, send_email_forgot_password
+from catalog_backend.environment import URL_CATALOG_RESET_PASSWORD
 from catalog_backend.log import logging
 from catalog_backend.model import DatabaseConnection
 
@@ -36,15 +38,15 @@ class AuthLoginBusiness(AuthBusiness):
 
 class AuthForgotPasswordBusiness(AuthBusiness):
 
-    def __generate_new_token(self, email):
-        return '123456'
+    def __generate_recovering_link(self, user_id):
+        token = token_urlsafe(32)
 
-    def __generate_recovering_link(self, email, base_url_reset_password):
-        token = self.__generate_new_token(email)
+        # save the token in the database
+        self.db_connection.insert_security(user_id, token)
 
-        return base_url_reset_password + '?token={}'.format(token)
+        return URL_CATALOG_RESET_PASSWORD + '?token={}'.format(token)
 
-    def send_an_email_to(self, email, url_reset_password):
+    def send_an_email_to(self, email):
         logging.info('AuthForgotPasswordBusiness.login()')
 
         result = self.db_connection.select_user(email=email)
@@ -53,7 +55,7 @@ class AuthForgotPasswordBusiness(AuthBusiness):
         if not result:
             raise NotFound('E-mail was not found.')
 
-        link = self.__generate_recovering_link(email, url_reset_password)
+        link = self.__generate_recovering_link(result[0]['userId'])
 
         logging.info('AuthForgotPasswordBusiness.login() - link: %s', link)
 

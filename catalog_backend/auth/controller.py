@@ -3,9 +3,10 @@
 
 """Controllers"""
 
+from json import loads
+
 from flask import request, Response
 from flask_restplus import Resource as APIResource
-from json import loads
 from werkzeug.exceptions import BadRequest, InternalServerError
 
 from catalog_backend.auth import ns
@@ -115,14 +116,7 @@ class ForgotPassword(APIResource):
         if status is False:
             raise BadRequest('Invalid e-mail format!')
 
-        logging.info('ForgotPassword.get() - request.url_root: %s', request.url_root)
-
-        # request.url_root[:-1] - it removes the `/` in the final of the string
-        url_reset_password = request.url_root[:-1] + self.URN_RESET_PASSWORD
-
-        logging.info('ForgotPassword.get() - url_reset_password: %s', url_reset_password)
-
-        auth_forgot_password_business.send_an_email_to(email, url_reset_password)
+        auth_forgot_password_business.send_an_email_to(email)
 
         return Response(status=200)
 

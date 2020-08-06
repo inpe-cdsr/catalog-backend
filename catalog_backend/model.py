@@ -148,6 +148,10 @@ class DatabaseConnection():
             self.close()
             # print('Database connection was closed.')
 
+    ##################################################
+    # USER
+    ##################################################
+
     def select_user(self, email=None, password=None):
         # Sources:
         # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
@@ -233,6 +237,22 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
+    def delete_user(self, user_id):
+        query = '''
+            DELETE FROM User
+            WHERE userId=:user_id;
+        '''
+
+        params = {
+            'user_id': user_id
+        }
+
+        self.execute(query, params, is_transaction=True)
+
+    ##################################################
+    # LOCATION
+    ##################################################
+
     def select_location(self, ip=None):
         where = ''
 
@@ -287,6 +307,37 @@ class DatabaseConnection():
 
         self.execute(query, params, is_transaction=True)
 
+    ##################################################
+    # SECURITY
+    ##################################################
+
+    def select_security(self, user_id, token):
+        logging.info('DatabaseConnection.select_security()')
+
+        params = {'user_id': user_id, 'token': token}
+
+        logging.info('DatabaseConnection.select_security() - params: %s', params)
+
+        query = 'SELECT * FROM security WHERE user_id=:user_id AND token=:token;'
+
+        # execute the query and fix the resulted rows
+        return fix_rows(self.execute(query, params))
+
+    def insert_security(self, user_id, token):
+        logging.info('DatabaseConnection.insert_security()')
+
+        params = {'user_id': user_id, 'token': token}
+
+        logging.info('DatabaseConnection.insert_security() - params: %s', params)
+
+        query = 'INSERT INTO security (user_id, token) VALUES (:user_id, :token);'
+
+        self.execute(query, params, is_transaction=True)
+
+    ##################################################
+    # OTHER
+    ##################################################
+
     def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None):
         logging.info('DatabaseConnection.insert_statistics()')
 
@@ -335,15 +386,3 @@ class DatabaseConnection():
         address_id = self.execute(query, params, is_transaction=True)
 
         return address_id
-
-    def delete_user(self, user_id):
-        query = '''
-            DELETE FROM User
-            WHERE userId=:user_id;
-        '''
-
-        params = {
-            'user_id': user_id
-        }
-
-        self.execute(query, params, is_transaction=True)
