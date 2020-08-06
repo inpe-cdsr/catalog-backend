@@ -63,27 +63,24 @@ class DownloadBusiness():
         # in other words, there is not any location information
         return CDSRIP.get_location_structure(request.remote_addr)
 
-    def insert_statistics(self, username=None, password=None, urn=None,
+    def insert_statistics(self, email=None, urn=None,
                           ips_list=None, scene_id=None, **kwards):
-        """It inserts statistics in the database"""
+        """Inserts statistics in the database"""
 
         logging.info('DownloadBusiness.insert_statistics()')
 
-        logging.info('DownloadBusiness.insert_statistics() - username: %s', username)
-        # logging.debug('DownloadBusiness.insert_statistics() - password: %s', password)
+        logging.info('DownloadBusiness.insert_statistics() - email: %s', email)
         logging.info('DownloadBusiness.insert_statistics() - urn: %s', urn)
         logging.info('DownloadBusiness.insert_statistics() - scene_id: %s', scene_id)
         logging.info('DownloadBusiness.insert_statistics() - kwards: %s', kwards)
 
         # check if user exists in the database
-        user = self.db_connection.select_user(
-            email=username, password=password
-        )
+        user = self.db_connection.select_user(email=email)
 
-        # logging.debug('DownloadBusiness.insert_statistics() - result: %s', result)
+        # logging.debug('DownloadBusiness.insert_statistics() - user: %s', user)
 
         if not user:
-            raise Forbidden('E-mail or Password was not found.')
+            raise Forbidden('E-mail or password was not found.')
 
         location = self.get_location(ips_list)
 

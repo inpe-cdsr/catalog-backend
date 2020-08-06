@@ -54,9 +54,10 @@ class Download(APIResource):
         #     password = credentials.password
         # Url credentials
         if request.args.get('key'):
-            credentials = request.args['key'].split(':')
-            username = credentials[0]
-            password = credentials[1]
+            # credentials = request.args['key'].split(':')
+            # username = credentials[0]
+            # password = credentials[1]
+            email = request.args['key']
         else:
             raise Unauthorized('Credentials are required!')
 
@@ -76,8 +77,8 @@ class Download(APIResource):
         # do not print username and password
         logging.debug('Download.get() - parameters: %s', parameters)
 
-        parameters['username'] = username
-        parameters['password'] = password
+        parameters['email'] = email
+        # parameters['password'] = password
 
         self.download_business.insert_statistics(**parameters)
 
