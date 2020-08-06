@@ -329,7 +329,7 @@ class DatabaseConnection():
         self.execute(query, params, is_transaction=True)
 
     def delete_security(self, user_id, token):
-        query = 'DELETE FROM security WHERE userId=:user_id AND token=:token;'
+        query = 'DELETE FROM security WHERE user_id=:user_id AND token=:token;'
 
         params = {'user_id': user_id, 'token': token}
 

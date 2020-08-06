@@ -15,6 +15,7 @@ app = catalog_backend_app.test_client()
 
 URL_AUTH_LOGIN = '/api/auth/login'
 URL_AUTH_FORGOT_PASSWORD = '/api/auth/forgot-password'
+URL_AUTH_RESET_PASSWORD = '/api/auth/reset-password'
 
 
 ##################################################
@@ -101,18 +102,77 @@ class TestAuthLoginError(TestCase):
 
 
 ##################################################
-# TestAuthForgotPassword
+# TestAuthForgotPassword and TestAuthResetPassword
 ##################################################
 
-class TestAuthForgotPasswordSuccess(TestCase):
-    """TestAuthForgotPasswordSuccess"""
+class TestAuthForgotResetPasswordSuccess(TestCase):
+    """TestAuthForgotResetPasswordSuccess"""
 
-    def test__get__auth_forgot_password__200_success(self):
-        """TestAuthForgotPasswordSuccess.test__get__auth_forgot_password__200_success"""
+    def test__get__auth_forgot_reset_password__200_success(self):
+        """TestAuthForgotResetPasswordSuccess.test__get__auth_forgot_reset_password__200_success"""
 
-        email = TEST_VALID_EMAIL_TO_SEND
+        email = TEST_USER_EMAIL
+        old_password = TEST_USER_PASSWORD
+        new_password = 'new_password'
+
+        ##################################################
+        # request a token to update the password
+        ##################################################
 
         response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(200, response.status_code)
+
+        token = loads(response.data.decode('utf-8'))
+
+        self.assertIn('token', token)
+
+        token = token['token']
+
+        ##################################################
+        # update the password
+        ##################################################
+
+        body = {'email': email, 'password': new_password, 'token': token}
+
+        response = app.post(URL_AUTH_RESET_PASSWORD, data=dumps(body))
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('', response.data.decode('utf-8'))
+
+        ##################################################
+        # try to login with the new password
+        ##################################################
+
+        body = {'email': email, 'password': new_password}
+
+        response = app.post(URL_AUTH_LOGIN, data=dumps(body))
+
+        self.assertEqual(200, response.status_code)
+        # check if a non-empty string has been returned (i.e. a token has been returned)
+        self.assertNotEqual('', response.data.decode('utf-8'))
+
+        ##################################################
+        # request a token to change the password to its previous version
+        ##################################################
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(200, response.status_code)
+
+        token = loads(response.data.decode('utf-8'))
+
+        self.assertIn('token', token)
+
+        token = token['token']
+
+        ##################################################
+        # update the password to its previous version
+        ##################################################
+
+        body = {'email': email, 'password': old_password, 'token': token}
+
+        response = app.post(URL_AUTH_RESET_PASSWORD, data=dumps(body))
 
         self.assertEqual(200, response.status_code)
         self.assertEqual('', response.data.decode('utf-8'))
@@ -141,47 +201,51 @@ class TestAuthForgotPasswordError(TestCase):
         self.assertEqual(404, response.status_code)
         self.assertEqual({"message": "E-mail was not found."}, loads(response.data))
 
-'''
-##################################################
-# TestAuthResetPassword
-##################################################
 
-class TestAuthResetPasswordSuccess(TestCase):
-    """TestAuthResetPasswordSuccess"""
+class TestAuthResetPasswordError(TestCase):
+    """TestAuthResetPasswordError"""
 
-    def test__get__auth_reset_password__200_success(self):
-        """TestAuthResetPasswordSuccess.test__get__auth_reset_password__200_success"""
+    def test__get__auth_reset_password__400_bad_request__empty_body(self):
+        """TestAuthResetPasswordError.test__get__auth_reset_password__400_bad_request__empty_body"""
 
-        email = TEST_VALID_EMAIL_TO_SEND
+        body = ''
 
-        response = app.post(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
-
-        # {"email": "test@test.com", "password": "test", "token": "123456"}
-
-        self.assertEqual(200, response.status_code)
-        self.assertEqual('', response.data.decode('utf-8'))
-
-
-class TestAuthResetPasswordPasswordError(TestCase):
-    """TestAuthForgotPasswordError"""
-
-    def test__get__auth_forgot_password__400_bad_request__invalid_email_format(self):
-        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__invalid_email_format"""
-
-        email = 'test_at_test.com'
-
-        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+        response = app.post(URL_AUTH_RESET_PASSWORD, data=body)
 
         self.assertEqual(400, response.status_code)
-        self.assertEqual({"message": "Invalid e-mail format!"}, loads(response.data))
+        self.assertEqual({"message": "Request data is empty."}, loads(response.data))
 
-    def test__get__auth_forgot_password__400_bad_request__email_was_not_found(self):
-        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__email_was_not_found"""
+    def test__get__auth_reset_password__400_bad_request__invalid_data_information(self):
+        """TestAuthResetPasswordError.test__get__auth_reset_password__400_bad_request__invalid_data_information"""
 
-        email = 'test@test.com'
+        bodies =[
+            {'email': 'test_at_test.com', 'password': 'password', 'token': '123456'},
+            {'email': 'test@test.com', 'password': '', 'token': '123456'},
+            {'email': 'test@test.com', 'password': 'password', 'token': ''}
+        ]
 
-        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+        for body in bodies:
+            response = app.post(URL_AUTH_RESET_PASSWORD, data=dumps(body))
+
+            self.assertEqual(400, response.status_code)
+            self.assertEqual({"message": "Invalid data information."}, loads(response.data))
+
+    def test__get__auth_reset_password__404_bad_request__email_was_not_found(self):
+        """TestAuthResetPasswordError.test__get__auth_reset_password__404_bad_request__email_was_not_found"""
+
+        body = {'email': 'I_do_not_exist@test.com', 'password': 'password', 'token': '123456'}
+
+        response = app.post(URL_AUTH_RESET_PASSWORD, data=dumps(body))
 
         self.assertEqual(404, response.status_code)
         self.assertEqual({"message": "E-mail was not found."}, loads(response.data))
-'''
+
+    def test__get__auth_reset_password__404_bad_request__token_was_not_found(self):
+        """TestAuthResetPasswordError.test__get__auth_reset_password__404_bad_request__email_was_not_found"""
+
+        body = {'email': TEST_USER_EMAIL, 'password': TEST_USER_PASSWORD, 'token': '123456'}
+
+        response = app.post(URL_AUTH_RESET_PASSWORD, data=dumps(body))
+
+        self.assertEqual(404, response.status_code)
+        self.assertEqual({"message": "Token was not found."}, loads(response.data))

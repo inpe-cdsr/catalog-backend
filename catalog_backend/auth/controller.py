@@ -13,6 +13,7 @@ from catalog_backend.auth import ns
 from catalog_backend.auth.business import AuthLoginBusiness, AuthForgotPasswordBusiness, \
                                           AuthResetPasswordBusiness
 from catalog_backend.auth.parsers import validate
+from catalog_backend.environment import FLASK_ENV
 from catalog_backend.log import logging
 
 
@@ -50,7 +51,7 @@ class AuthLogin(APIResource):
         body = request.data
 
         if body == b'':
-            raise BadRequest('Request data is empty!')
+            raise BadRequest('Request data is empty.')
 
         # get request data (bytes) and convert it to dict
         body = loads(body.decode('utf-8'))
@@ -120,7 +121,10 @@ class AuthForgotPassword(APIResource):
             logging.error('AuthForgotPassword.get() - errors: %s', data)
             raise BadRequest('Invalid e-mail format!')
 
-        auth_forgot_password_business.send_an_email_to(email)
+        token = auth_forgot_password_business.send_an_email_to(email)
+
+        if FLASK_ENV == 'development':
+            return {'token': token}
 
         return Response(status=200)
 
@@ -150,8 +154,8 @@ class AuthResetPassword(APIResource):
 
         body = request.data
 
-        if body == b'':
-            raise BadRequest('Request data is empty!')
+        if body == b'' or body == b'{}':
+            raise BadRequest('Request data is empty.')
 
         # get request data (bytes) and convert it to dict
         body = loads(body.decode('utf-8'))
