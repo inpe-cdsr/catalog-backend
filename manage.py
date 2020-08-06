@@ -51,20 +51,20 @@ def docs(serve=False, port=5001):
 def test():
     """Run the unit tests."""
 
-    import pytest
+    from pytest import main
     from logging import disable, CRITICAL
 
     # disable logging during tests
     # comment this line if you want to show the logging
     disable(CRITICAL)
 
-    pytest.main(["-v",
-                 "--cov-report", "term",
-                 "--cov-report", "html",
-                 "--cov-report", "annotate",
-                 "--cov=catalog_backend",
-                 "-s",
-                 "tests/"])
+    main(["-v",
+          "--cov-report", "term",
+          "--cov-report", "html",
+          "--cov-report", "annotate",
+          "--cov=catalog_backend",
+          "-s",
+          "tests/"])
 
 
 if __name__ == '__main__':

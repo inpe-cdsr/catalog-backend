@@ -2,15 +2,13 @@
 
 """DGI Catalog"""
 
-from .environment import ENV
-
 from flask import Flask
 from flask.logging import create_logger, logging
-
 from flask_cors import CORS
 
 from catalog_backend.blueprint import blueprint
 from catalog_backend.config import get_settings
+from catalog_backend.environment import ENV
 
 
 def create_app(config):

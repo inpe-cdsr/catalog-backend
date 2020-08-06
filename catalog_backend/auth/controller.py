@@ -3,7 +3,7 @@
 
 """Controllers"""
 
-from flask import request
+from flask import request, Response
 from flask_restplus import Resource as APIResource
 from json import loads
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -86,6 +86,8 @@ class ForgotPassword(APIResource):
     Full route: /api/auth/forgot-password
     """
 
+    URN_RESET_PASSWORD = '/api/auth/reset-password'
+
     def get(self):
         """
         Sends an e-mail to the user to make him create a new password.
@@ -101,7 +103,7 @@ class ForgotPassword(APIResource):
         None
             Sends an e-mail with a link to create a new password.
         """
-        logging.info('ForgotPassword.get()\n')
+        logging.info('ForgotPassword.get()')
 
         email = request.args.get('email')
 
@@ -113,7 +115,16 @@ class ForgotPassword(APIResource):
         if status is False:
             raise BadRequest('Invalid e-mail format!')
 
-        auth_forgot_password_business.send_an_email_to(email)
+        logging.info('ForgotPassword.get() - request.url_root: %s', request.url_root)
+
+        # request.url_root[:-1] - it removes the `/` in the final of the string
+        url_reset_password = request.url_root[:-1] + self.URN_RESET_PASSWORD
+
+        logging.info('ForgotPassword.get() - url_reset_password: %s', url_reset_password)
+
+        auth_forgot_password_business.send_an_email_to(email, url_reset_password)
+
+        return Response(status=200)
 
 '''
 @api.route('/reset-password')

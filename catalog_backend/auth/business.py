@@ -36,8 +36,16 @@ class AuthLoginBusiness(AuthBusiness):
 
 class AuthForgotPasswordBusiness(AuthBusiness):
 
-    def send_an_email_to(self, email):
-        logging.info('AuthForgotPasswordBusiness.login()\n')
+    def __generate_new_token(self, email):
+        return '123456'
+
+    def __generate_recovering_link(self, email, base_url_reset_password):
+        token = self.__generate_new_token(email)
+
+        return base_url_reset_password + '?token={}'.format(token)
+
+    def send_an_email_to(self, email, url_reset_password):
+        logging.info('AuthForgotPasswordBusiness.login()')
 
         result = self.db_connection.select_user(email=email)
 
@@ -45,4 +53,8 @@ class AuthForgotPasswordBusiness(AuthBusiness):
         if not result:
             raise NotFound('E-mail was not found.')
 
-        send_email_forgot_password(email)
+        link = self.__generate_recovering_link(email, url_reset_password)
+
+        logging.info('AuthForgotPasswordBusiness.login() - link: %s', link)
+
+        send_email_forgot_password(email, link)

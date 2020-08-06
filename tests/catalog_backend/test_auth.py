@@ -7,37 +7,42 @@ from unittest import TestCase
 
 from catalog_backend import app as catalog_backend_app
 
-from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
+from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD, TEST_VALID_EMAIL_TO_SEND
 
 
 catalog_backend_app.testing = True
 app = catalog_backend_app.test_client()
 
-URL = '/api/auth/login'
+URL_AUTH_LOGIN = '/api/auth/login'
+URL_AUTH_FORGOT_PASSWORD = '/api/auth/forgot-password'
 
 
-class TestCatalogAuthLoginSuccess(TestCase):
-    """TestCatalogAuthLoginSuccess"""
+##################################################
+# TestAuthLogin
+##################################################
+
+class TestAuthLoginSuccess(TestCase):
+    """TestAuthLoginSuccess"""
 
     def test__post__catalog_auth_login__200_success(self):
-        """TestCatalogAuthLoginSuccess.test__post__catalog_auth_login"""
+        """TestAuthLoginSuccess.test__post__catalog_auth_login"""
 
         body = {'email': TEST_USER_EMAIL, 'password': TEST_USER_PASSWORD}
 
-        response = app.post(URL, data=dumps(body))
+        response = app.post(URL_AUTH_LOGIN, data=dumps(body))
 
         self.assertEqual(200, response.status_code)
         # check if a non-empty string has been returned (i.e. a token has been returned)
         self.assertNotEqual('', response.data.decode('utf-8'))
 
 
-class TestCatalogAuthLoginError(TestCase):
-    """TestCatalogAuthLoginError"""
+class TestAuthLoginError(TestCase):
+    """TestAuthLoginError"""
 
     def test__post__catalog_auth_login__400_bad_request__request_data_is_empty(self):
-        """TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__request_data_is_empty"""
+        """TestAuthLoginError.test__post__catalog_auth_login__400_bad_request__request_data_is_empty"""
 
-        response = app.post(URL)
+        response = app.post(URL_AUTH_LOGIN)
 
         body = loads(response.data.decode('utf-8'))
 
@@ -45,7 +50,7 @@ class TestCatalogAuthLoginError(TestCase):
         self.assertEqual('Request data is empty.', body['message'])
 
     def test__post__catalog_auth_login__400_bad_request__required_field(self):
-        """TestCatalogAuthLoginError.test__post__catalog_auth_login__400_bad_request__required_field"""
+        """TestAuthLoginError.test__post__catalog_auth_login__400_bad_request__required_field"""
 
         test_cases = [
             {
@@ -63,7 +68,7 @@ class TestCatalogAuthLoginError(TestCase):
         ]
 
         for case in test_cases:
-            response = app.post(URL, data=case['body'])
+            response = app.post(URL_AUTH_LOGIN, data=case['body'])
 
             # response.data is bytes, then convert it to dict
             result = loads(response.data.decode('utf-8'))
@@ -72,7 +77,7 @@ class TestCatalogAuthLoginError(TestCase):
             self.assertEqual(case['expected'], result['message'])
 
     def test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found(self):
-        """TestCatalogAuthLoginError.test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found"""
+        """TestAuthLoginError.test__post__catalog_auth_login__404_not_found__email_or_password_was_not_found"""
 
         test_cases = [
             {
@@ -87,9 +92,51 @@ class TestCatalogAuthLoginError(TestCase):
         ]
 
         for case in test_cases:
-            response = app.post(URL, data=dumps(case['body']))
+            response = app.post(URL_AUTH_LOGIN, data=dumps(case['body']))
 
             result = loads(response.data)
 
             self.assertEqual(404, response.status_code)
             self.assertEqual('E-mail or Password was not found.', result['message'])
+
+
+##################################################
+# TestAuthForgotPassword
+##################################################
+
+class TestAuthForgotPasswordSuccess(TestCase):
+    """TestAuthForgotPasswordSuccess"""
+
+    def test__get__auth_forgot_password__200_success(self):
+        """TestAuthForgotPasswordSuccess.test__get__auth_forgot_password__200_success"""
+
+        email = TEST_VALID_EMAIL_TO_SEND
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('', response.data.decode('utf-8'))
+
+
+class TestAuthForgotPasswordError(TestCase):
+    """TestAuthForgotPasswordError"""
+
+    def test__get__auth_forgot_password__400_bad_request__invalid_email_format(self):
+        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__invalid_email_format"""
+
+        email = 'test_at_test.com'
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual({"message": "Invalid e-mail format!"}, loads(response.data))
+
+    def test__get__auth_forgot_password__400_bad_request__email_was_not_found(self):
+        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__email_was_not_found"""
+
+        email = 'test@test.com'
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(404, response.status_code)
+        self.assertEqual({"message": "E-mail was not found."}, loads(response.data))
