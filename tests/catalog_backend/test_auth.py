@@ -7,7 +7,7 @@ from unittest import TestCase
 
 from catalog_backend import app as catalog_backend_app
 
-from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD, TEST_VALID_EMAIL_TO_SEND
+from tests.test_environment import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
 catalog_backend_app.testing = True
