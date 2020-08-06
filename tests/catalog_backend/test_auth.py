@@ -140,3 +140,48 @@ class TestAuthForgotPasswordError(TestCase):
 
         self.assertEqual(404, response.status_code)
         self.assertEqual({"message": "E-mail was not found."}, loads(response.data))
+
+'''
+##################################################
+# TestAuthResetPassword
+##################################################
+
+class TestAuthResetPasswordSuccess(TestCase):
+    """TestAuthResetPasswordSuccess"""
+
+    def test__get__auth_reset_password__200_success(self):
+        """TestAuthResetPasswordSuccess.test__get__auth_reset_password__200_success"""
+
+        email = TEST_VALID_EMAIL_TO_SEND
+
+        response = app.post(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        # {"email": "test@test.com", "password": "test", "token": "123456"}
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('', response.data.decode('utf-8'))
+
+
+class TestAuthResetPasswordPasswordError(TestCase):
+    """TestAuthForgotPasswordError"""
+
+    def test__get__auth_forgot_password__400_bad_request__invalid_email_format(self):
+        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__invalid_email_format"""
+
+        email = 'test_at_test.com'
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual({"message": "Invalid e-mail format!"}, loads(response.data))
+
+    def test__get__auth_forgot_password__400_bad_request__email_was_not_found(self):
+        """TestAuthForgotPasswordError.test__get__auth_forgot_password__400_bad_request__email_was_not_found"""
+
+        email = 'test@test.com'
+
+        response = app.get(URL_AUTH_FORGOT_PASSWORD + '?email={}'.format(email))
+
+        self.assertEqual(404, response.status_code)
+        self.assertEqual({"message": "E-mail was not found."}, loads(response.data))
+'''

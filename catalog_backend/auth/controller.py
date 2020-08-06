@@ -10,7 +10,8 @@ from flask_restplus import Resource as APIResource
 from werkzeug.exceptions import BadRequest, InternalServerError
 
 from catalog_backend.auth import ns
-from catalog_backend.auth.business import AuthLoginBusiness, AuthForgotPasswordBusiness
+from catalog_backend.auth.business import AuthLoginBusiness, AuthForgotPasswordBusiness, \
+                                          AuthResetPasswordBusiness
 from catalog_backend.auth.parsers import validate
 from catalog_backend.log import logging
 
@@ -19,12 +20,13 @@ api = ns
 
 auth_login_business = AuthLoginBusiness()
 auth_forgot_password_business = AuthForgotPasswordBusiness()
+auth_reset_password_business = AuthResetPasswordBusiness()
 
 
 @api.route('/login')
-class Login(APIResource):
+class AuthLogin(APIResource):
     """
-    Login
+    AuthLogin
     Full route: /api/auth/login
     """
 
@@ -35,20 +37,20 @@ class Login(APIResource):
         Request Parameters
         ----------
         request.data : bytes
-            JSON in bytes format that contains username and password information of a user
-            Example: b'{"username": "test", "password": "test"}'
+            JSON in bytes format that contains email and password information of a user
+            Example: b'{"email": "test@test.com", "password": "test"}'
 
         Returns
         -------
         string
             Token related to the logged user
         """
-        logging.info('Login.post()\n')
+        logging.info('AuthLogin.post()\n')
 
         body = request.data
 
         if body == b'':
-            raise BadRequest('Request data is empty.')
+            raise BadRequest('Request data is empty!')
 
         # get request data (bytes) and convert it to dict
         body = loads(body.decode('utf-8'))
@@ -57,15 +59,16 @@ class Login(APIResource):
         data, status = validate(body, 'login')
 
         if status is False:
+            logging.error('AuthLogin.get() - errors: %s', data)
             raise BadRequest(data)
 
-        logging.info('Login.post() - data[\'email\']: %s', data['email'])
+        logging.info('AuthLogin.post() - data[\'email\']: %s', data['email'])
 
         # validate user login
         token, user_info = auth_login_business.login(data['email'], data['password'])
 
-        # logging.info('Login.post() - user_info[\'userId\']: %s', user_info['userId'])
-        # logging.info('Login.post() - user_info[\'email\']: %s', user_info['email'])
+        # logging.info('AuthLogin.post() - user_info[\'userId\']: %s', user_info['userId'])
+        # logging.info('AuthLogin.post() - user_info[\'email\']: %s', user_info['email'])
 
         # if there is not a token (i.e. empty string), then raise an error
         if not token or not user_info:
@@ -81,9 +84,9 @@ class Login(APIResource):
 
 
 @api.route('/forgot-password')
-class ForgotPassword(APIResource):
+class AuthForgotPassword(APIResource):
     """
-    ForgotPassword
+    AuthForgotPassword
     Full route: /api/auth/forgot-password
     """
 
@@ -104,78 +107,64 @@ class ForgotPassword(APIResource):
         None
             Sends an e-mail with a link to create a new password.
         """
-        logging.info('ForgotPassword.get()')
+        logging.info('AuthForgotPassword.get()')
 
         email = request.args.get('email')
 
-        logging.info('ForgotPassword.get() - email: %s', email)
+        logging.info('AuthForgotPassword.get() - email: %s', email)
 
         # validate request body
         data, status = validate({'email': email}, 'forgot_password')
 
         if status is False:
+            logging.error('AuthForgotPassword.get() - errors: %s', data)
             raise BadRequest('Invalid e-mail format!')
 
         auth_forgot_password_business.send_an_email_to(email)
 
         return Response(status=200)
 
-'''
+
 @api.route('/reset-password')
-class ResetPassword(APIResource):
+class AuthResetPassword(APIResource):
     """
-    Login
+    AuthResetPassword
     Full route: /api/auth/reset-password
     """
 
     def post(self):
         """
-        Logs a user into the system
+        Resets the user password.
 
         Request Parameters
         ----------
         request.data : bytes
-            JSON in bytes format that contains username and password information of a user
-            Example: b'{"username": "test", "password": "test"}'
+            JSON in bytes format that contains email, password and token information of a user
+            Example: b'{"email": "test@test.com", "password": "test", "token": "123456"}'
 
         Returns
         -------
-        string
-            Token related to the logged user
+        None
         """
-        logging.info('Login.post()\n')
+        logging.info('AuthResetPassword.get()')
 
         body = request.data
 
         if body == b'':
-            raise BadRequest('Request data is empty.')
+            raise BadRequest('Request data is empty!')
 
         # get request data (bytes) and convert it to dict
         body = loads(body.decode('utf-8'))
 
+        logging.info('AuthResetPassword.get() - body: %s', body)
+
         # validate request body
-        data, status = validate(body, 'login')
+        data, status = validate(body, 'reset_password')
 
         if status is False:
-            raise BadRequest(data)
+            logging.error('AuthResetPassword.get() - errors: %s', data)
+            raise BadRequest('Invalid data information.')
 
-        logging.info('Login.post() - data[\'email\']: %s', data['email'])
+        auth_reset_password_business.reset_password(**body)
 
-        # validate user login
-        token, user_info = auth_login_business.login(data['email'], data['password'])
-
-        # logging.info('Login.post() - user_info[\'userId\']: %s', user_info['userId'])
-        # logging.info('Login.post() - user_info[\'email\']: %s', user_info['email'])
-
-        # if there is not a token (i.e. empty string), then raise an error
-        if not token or not user_info:
-            raise InternalServerError('Error during login.')
-
-        return {
-            "access_token": token,
-            "user_id": user_info['userId'],
-            "fullname": user_info['fullname'],
-            "email": user_info['email'],
-            "password": data['password']
-        }
-'''
+        return Response(status=200)

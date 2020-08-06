@@ -21,6 +21,18 @@ def forgot_password():
         }
     }
 
+def reset_password():
+    return {
+        'email': {
+            "type": "string",
+            "empty": False,
+            "required": True,
+            'regex': r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        },
+        'password': {"type": "string", "empty": False, "required": True},
+        'token': {"type": "string", "empty": False, "required": True}
+    }
+
 
 def validate(data, type_schema):
     schema = eval('{}()'.format(type_schema))

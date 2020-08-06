@@ -49,14 +49,53 @@ class AuthForgotPasswordBusiness(AuthBusiness):
     def send_an_email_to(self, email):
         logging.info('AuthForgotPasswordBusiness.login()')
 
-        result = self.db_connection.select_user(email=email)
+        user = self.db_connection.select_user(email=email)
 
-        # if an empty list (i.e. result == []), then raise an exception
-        if not result:
+        # if an empty list (i.e. user == []), then raise an exception
+        if not user:
             raise NotFound('E-mail was not found.')
 
-        link = self.__generate_recovering_link(result[0]['userId'])
+        link = self.__generate_recovering_link(user[0]['userId'])
 
         logging.info('AuthForgotPasswordBusiness.login() - link: %s', link)
 
         send_email_forgot_password(email, link)
+
+class AuthResetPasswordBusiness(AuthBusiness):
+
+    def reset_password(self, email, password, token, **kwargs):
+        logging.info('AuthResetPasswordBusiness.reset_password()')
+
+        logging.info('AuthResetPasswordBusiness.reset_password() - email: %s', email)
+        # logging.debug('AuthResetPasswordBusiness.reset_password() - password: %s', password)
+        logging.info('AuthResetPasswordBusiness.reset_password() - token: %s', token)
+
+        user = self.db_connection.select_user(email=email)
+
+        # if an empty list (i.e. user == []), then raise an exception
+        if not user:
+            raise NotFound('E-mail was not found.')
+
+        user_id = user[0]['userId']
+
+        security = self.db_connection.select_security(user_id=user_id, token=token)
+
+        logging.info('AuthResetPasswordBusiness.reset_password() - security: %s', security)
+
+        # if an empty list (i.e. user == []), then raise an exception
+        if not security:
+            raise NotFound('Token was not found.')
+
+        # update the user password
+        self.db_connection.update_user(user_id=user_id, password=password)
+
+        logging.info(
+            'AuthResetPasswordBusiness.reset_password() - user password has been reset successfully!'
+        )
+
+        # delete the token from the database
+        self.db_connection.delete_security(user_id=user_id, token=token)
+
+        logging.info(
+            'AuthResetPasswordBusiness.reset_password() - user token has been removed successfully!'
+        )

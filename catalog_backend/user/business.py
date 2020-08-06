@@ -15,7 +15,7 @@ class UserBusiness():
         """Inserts a user into database and it returns his/her id"""
 
         # check if user exists
-        user = self.db_connection.select_user_by_email(data['email'])
+        user = self.db_connection.select_user(email=data['email'])
 
         if user:
             raise Conflict('E-mail already registered!')

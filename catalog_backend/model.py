@@ -157,10 +157,12 @@ class DatabaseConnection():
         # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
         # https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
 
+        logging.info('DatabaseConnection.select_user()')
+
         where = []
         params = {}
 
-        logging.info('select_user() - email: %s', email)
+        logging.info('DatabaseConnection.select_user() - email: %s', email)
 
         if email is not None:
             where.append('email=:email')
@@ -175,24 +177,9 @@ class DatabaseConnection():
         if where != '':
             where = 'WHERE {}'.format(where)
 
-        query = '''SELECT * FROM User {};'''.format(where)
+        query = 'SELECT * FROM User {};'.format(where)
 
-        logging.info('select_user() - query: %s', query)
-
-        # execute the query and fix the resulted rows
-        return fix_rows(self.execute(query, params))
-
-    def select_user_by_email(self, email=None):
-        # Sources:
-        # https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
-        # https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
-
-        query = '''
-            SELECT * FROM User
-            WHERE email=:email
-        '''
-
-        params = {'email': email}
+        logging.info('DatabaseConnection.select_user() - query: %s', query)
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
@@ -237,15 +224,22 @@ class DatabaseConnection():
         # return user id (i.e. e-mail)
         return email
 
-    def delete_user(self, user_id):
-        query = '''
-            DELETE FROM User
-            WHERE userId=:user_id;
-        '''
+    def update_user(self, user_id, password):
+        logging.info('DatabaseConnection.update_user()')
+
+        query = 'UPDATE User SET password=:password WHERE userId=:user_id'
 
         params = {
-            'user_id': user_id
+            'user_id': user_id,
+            'password': mysql_old_password(password)
         }
+
+        self.execute(query, params, is_transaction=True)
+
+    def delete_user(self, user_id):
+        query = 'DELETE FROM User WHERE userId=:user_id;'
+
+        params = {'user_id': user_id}
 
         self.execute(query, params, is_transaction=True)
 
@@ -331,6 +325,13 @@ class DatabaseConnection():
         logging.info('DatabaseConnection.insert_security() - params: %s', params)
 
         query = 'INSERT INTO security (user_id, token) VALUES (:user_id, :token);'
+
+        self.execute(query, params, is_transaction=True)
+
+    def delete_security(self, user_id, token):
+        query = 'DELETE FROM security WHERE userId=:user_id AND token=:token;'
+
+        params = {'user_id': user_id, 'token': token}
 
         self.execute(query, params, is_transaction=True)
 
