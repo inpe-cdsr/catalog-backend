@@ -91,15 +91,13 @@ def send_email_forgot_password(email, link):
     link (str): link to recover the password
     """
 
-    logging.info('send_email_forgot_password() - sending an e-mail to `%s`.', email)
-
     # read the template file
     email_content_forgot_password = Template(open(FORGOT_HTML_FILE_PATH, "r").read())
     # substitute the variables inside the template, by changing the `$link` by `link`
     email_content_forgot_password = email_content_forgot_password.substitute(link=link)
 
     send_email(
-        email_subject='[not-reply][forgot-password] Link to set a new passoword.',
+        email_subject='[not-reply][forgot-password] Link to set a new password.',
         email_to=email,
         email_content=email_content_forgot_password
     )

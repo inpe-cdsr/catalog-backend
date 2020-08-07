@@ -39,12 +39,13 @@ class AuthLoginBusiness(AuthBusiness):
 class AuthForgotPasswordBusiness(AuthBusiness):
 
     def send_an_email_to(self, email):
-        logging.info('AuthForgotPasswordBusiness.login()')
+        logging.info('AuthForgotPasswordBusiness.send_an_email_to()')
 
         user = self.db_connection.select_user(email=email)
 
         # if an empty list (i.e. user == []), then raise an exception
         if not user:
+            logging.error('AuthForgotPasswordBusiness.send_an_email_to() - e-mail was not found.')
             raise NotFound('E-mail was not found.')
 
         token = token_urlsafe(32)
@@ -54,7 +55,7 @@ class AuthForgotPasswordBusiness(AuthBusiness):
 
         link = URL_CATALOG_RESET_PASSWORD + '?token={}'.format(token)
 
-        logging.info('AuthForgotPasswordBusiness.login() - link: %s', link)
+        logging.info('AuthForgotPasswordBusiness.send_an_email_to() - link: %s', link)
 
         send_email_forgot_password(email, link)
 
@@ -74,6 +75,7 @@ class AuthResetPasswordBusiness(AuthBusiness):
 
         # if an empty list (i.e. user == []), then raise an exception
         if not user:
+            logging.error('AuthResetPasswordBusiness.reset_password() - e-mail was not found.')
             raise NotFound('E-mail was not found.')
 
         user_id = user[0]['userId']
@@ -84,6 +86,7 @@ class AuthResetPasswordBusiness(AuthBusiness):
 
         # if an empty list (i.e. user == []), then raise an exception
         if not security:
+            logging.error('AuthResetPasswordBusiness.reset_password() - token was not found.')
             raise NotFound('Token was not found.')
 
         # update the user password

@@ -155,6 +155,7 @@ class AuthResetPassword(APIResource):
         body = request.data
 
         if body == b'' or body == b'{}':
+            logging.error('AuthResetPassword.get() - request data is empty.')
             raise BadRequest('Request data is empty.')
 
         # get request data (bytes) and convert it to dict
