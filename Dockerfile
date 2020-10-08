@@ -7,10 +7,9 @@ RUN apt-get update -y \
 # change the TLS version, from 1.2 to 1.0
 RUN sed -i 's/TLSv1.2/TLSv1.0/g' /etc/ssl/openssl.cnf
 
-ADD . /app
-
 WORKDIR /app
 
-RUN pip3 install -r requirements.txt
+COPY requirements.txt /app
+RUN pip3 install -r requirements.txt --use-feature=2020-resolver
 
-CMD [ "python3", "manage.py", "run" ]
+# CMD [ "python3", "manage.py", "run" ]

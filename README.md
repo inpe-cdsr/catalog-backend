@@ -77,13 +77,13 @@ $ python manage.py test
 Build the Docker image in development mode:
 
 ```
-$ docker build -t inpe-cdsr-catalog-backend -f docker/dev.Dockerfile . --no-cache
+$ docker build -t inpe-cdsr-catalog-backend -f Dockerfile . --no-cache
 ```
 
 Build the Docker image in production mode. If you do not have access to `registry.dpi.inpe.br` registry, then you should change to another one.
 
 ```
-$ docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.9 -f docker/prod.Dockerfile . --no-cache
+$ docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:0.0.9 -f Dockerfile . --no-cache
 ```
 
 Push the Docker image to the registry:
