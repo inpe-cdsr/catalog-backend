@@ -1,15 +1,17 @@
-FROM python:3.7-slim-buster
-
-RUN apt-get update -y \
-    && apt-get install -y gcc libmariadb-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# change the TLS version, from 1.2 to 1.0
-RUN sed -i 's/TLSv1.2/TLSv1.0/g' /etc/ssl/openssl.cnf
+FROM python:3.8.5-slim-buster
 
 WORKDIR /app
 
-COPY requirements.txt /app
-RUN pip3 install -r requirements.txt --use-feature=2020-resolver
+RUN apt-get update -y && \
+    apt-get install -y gcc libmariadb-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    # change the TLS version, from 1.2 to 1.0
+    sed -i 's/TLSv1.2/TLSv1.0/g' /etc/ssl/openssl.cnf
 
-# CMD [ "python3", "manage.py", "run" ]
+COPY . /app
+
+RUN pip install -r requirements.txt
+
+EXPOSE 5001
+
+CMD [ "python", "manage.py", "run" ]

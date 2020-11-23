@@ -6,7 +6,7 @@
 
 from flask import request, redirect
 from flask_restplus import Resource as APIResource
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import BadRequest, Unauthorized
 
 from catalog_backend.download import ns
 from catalog_backend.download.business import DownloadBusiness
@@ -53,37 +53,39 @@ class Download(APIResource):
         #     username = credentials.username
         #     password = credentials.password
         # Url credentials
-        if request.args.get('key'):
-            # credentials = request.args['key'].split(':')
-            # username = credentials[0]
-            # password = credentials[1]
-            email = request.args['key']
-        else:
-            raise Unauthorized('Credentials are required!')
+
+        if not request.args.get('email'):
+            message = '`email` parameter is required!'
+            logging.warning(f'Download.get() - {message}')
+            raise BadRequest(message)
+
+        if not request.args.get('item_id') or not request.args.get('collection'):
+            message = '`item_id` and `collection` parameters are required!'
+            logging.warning(f'Download.get() - {message}')
+            raise BadRequest(message)
 
         logging.info('DownloadBusiness.get() - BASE_PATH: %s', BASE_PATH)
 
         # get the path to the file
         # e.g: url = '/data/TIFF/.../CBERS_4_MUX_20191022_154_126_L2.tif'
-        urn = "{}/{}".format(BASE_PATH, path)
+        urn = f"{BASE_PATH}/{path}"
 
         parameters = {
+            'email': request.args.get('email'),
+            # 'password': request.args.get('password'),
+            'item_id': request.args.get('item_id'),
+            'collection': request.args.get('collection'),
             'urn': urn,
-            'ips_list': ips_list,
-            'dataset': request.args.get('collection'),
-            'scene_id': request.args.get('scene_id')
+            'ips_list': ips_list
         }
 
         # do not print username and password
-        logging.debug('Download.get() - parameters: %s', parameters)
-
-        parameters['email'] = email
-        # parameters['password'] = password
+        logging.info(f'Download.get() - parameters: {parameters}')
 
         self.download_business.insert_statistics(**parameters)
 
         uri = URL_DOWNLOAD + urn
 
-        logging.debug('Download.get() - uri: %s', uri)
+        logging.debug(f'Download.get() - uri: {uri}')
 
         return redirect(uri)

@@ -2,8 +2,10 @@
 
 """business.py"""
 
+from json import loads
+
 from flask import request
-from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import BadRequest, Forbidden
 
 from catalog_backend.cdsr_ip import CDSRIP, CDSRIPException
 from catalog_backend.model import DatabaseConnection
@@ -55,23 +57,25 @@ class DownloadBusiness():
                 continue
 
         logging.info(
-            'DownloadBusiness.get_location() - public IP was not found, then private IP was chose: %s',
-            request.remote_addr
+            'DownloadBusiness.get_location() - public IP was not found,'
+            f' then private IP was chose: {request.remote_addr}'
         )
 
         # if there is not one public IP, return a location object based on public IP,
         # in other words, there is not any location information
         return CDSRIP.get_location_structure(request.remote_addr)
 
-    def insert_statistics(self, email=None, urn=None,
-                          ips_list=None, scene_id=None, **kwards):
+    def insert_statistics(self, email=None, item_id=None, collection=None, urn=None,
+                          ips_list=None, **kwards):
         """Inserts statistics in the database"""
 
         logging.info('DownloadBusiness.insert_statistics()')
 
         logging.info('DownloadBusiness.insert_statistics() - email: %s', email)
+        logging.info('DownloadBusiness.insert_statistics() - item_id: %s', item_id)
+        logging.info('DownloadBusiness.insert_statistics() - collection: %s', collection)
         logging.info('DownloadBusiness.insert_statistics() - urn: %s', urn)
-        logging.info('DownloadBusiness.insert_statistics() - scene_id: %s', scene_id)
+        logging.info('DownloadBusiness.insert_statistics() - ips_list: %s', ips_list)
         logging.info('DownloadBusiness.insert_statistics() - kwards: %s', kwards)
 
         # check if user exists in the database
@@ -80,7 +84,25 @@ class DownloadBusiness():
         # logging.debug('DownloadBusiness.insert_statistics() - user: %s', user)
 
         if not user:
-            raise Forbidden('E-mail or password was not found.')
+            raise Forbidden('Invalid e-mail.')
+
+        # check if item exists in the database
+        item = self.db_connection.select_item(item_id=item_id, collection=collection)
+
+        logging.debug(f'DownloadBusiness.insert_statistics() - item: {item}')
+
+        if not item:
+            raise BadRequest('Invalid `item_id` or `collection` parameters.')
+
+        # get the list of assets from item
+        assets = loads(item[0]['assets'])
+        # check if the path is a valid asset
+        assets = list(filter(lambda asset: asset['href'] == urn.replace('.xml', '.tif'), assets))
+
+        logging.info(f'DownloadBusiness.insert_statistics() - assets: {assets}')
+
+        if not assets:
+            raise BadRequest('Invalid asset.')
 
         location = self.get_location(ips_list)
 
@@ -102,7 +124,8 @@ class DownloadBusiness():
 
         # save the statistics
         self.db_connection.insert_statistics(
-            user_id=user[0]['userId'], scene_id=scene_id, path=urn, ip=location['ip']
+            user_id=user[0]['userId'], scene_id=item_id, dataset=collection,
+            path=urn, ip=location['ip']
         )
 
         logging.info(

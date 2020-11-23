@@ -18,7 +18,8 @@ from catalog_backend.log import logging
 def fix_rows(rows):
     for row in rows:
         for key in row:
-            # datetime/date is not serializable by default, then it gets a serializable string representation
+            # datetime/date is not serializable by default, then it gets a
+            # serializable string representation
             if isinstance(row[key], (datetime, date)):
                 row[key] = row[key].isoformat()
 
@@ -104,7 +105,8 @@ class DatabaseConnection():
             else:
                 query_text = text(query)
 
-            logging.info('DatabaseConnection.execute() - query_text: %s', query_text)
+            logging.info(f'DatabaseConnection.execute() - query_text: {query_text}')
+            logging.info(f'DatabaseConnection.execute() - params: {params}')
 
             self.try_to_connect()
 
@@ -162,7 +164,7 @@ class DatabaseConnection():
         where = []
         params = {}
 
-        logging.info('DatabaseConnection.select_user() - email: %s', email)
+        logging.info(f'DatabaseConnection.select_user() - email: {email}')
 
         if email is not None:
             where.append('email=:email')
@@ -179,7 +181,7 @@ class DatabaseConnection():
 
         query = 'SELECT * FROM User {};'.format(where)
 
-        logging.info('DatabaseConnection.select_user() - query: %s', query)
+        logging.info(f'DatabaseConnection.select_user() - query: {query}')
 
         # execute the query and fix the resulted rows
         return fix_rows(self.execute(query, params))
@@ -242,6 +244,37 @@ class DatabaseConnection():
         params = {'user_id': user_id}
 
         self.execute(query, params, is_transaction=True)
+
+    ##################################################
+    # ITEM
+    ##################################################
+
+    def select_item(self, item_id=None, collection=None):
+        logging.info('DatabaseConnection.select_item()')
+        logging.info(f'DatabaseConnection.select_item() - item_id: {item_id}')
+        logging.info(f'DatabaseConnection.select_item() - collection: {collection}')
+
+        where = []
+        params = {}
+
+        if item_id is not None:
+            where.append('id=:item_id')
+            params['item_id'] = item_id
+
+        if collection is not None:
+            where.append('collection=:collection')
+            params['collection'] = collection
+
+        where = ' AND '.join(where)
+        if where != '':
+            where = f'WHERE {where}'
+
+        query = f'SELECT * FROM stac_item {where};'
+
+        logging.info(f'DatabaseConnection.select_item() - query: {query}')
+
+        # execute the query and fix the resulted rows
+        return fix_rows(self.execute(query, params))
 
     ##################################################
     # LOCATION
@@ -339,20 +372,21 @@ class DatabaseConnection():
     # OTHER
     ##################################################
 
-    def insert_statistics(self, user_id=None, scene_id=None, path=None, ip=None):
+    def insert_statistics(self, user_id=None, scene_id=None, dataset=None, path=None, ip=None):
         logging.info('DatabaseConnection.insert_statistics()')
 
         query = '''
             INSERT INTO Download (
-                userId, sceneId, path, ip, date
+                userId, sceneId, dataset, path, ip, date
             ) VALUES (
-                :user_id, :scene_id, :path, :ip, NOW()
+                :user_id, :scene_id, :dataset, :path, :ip, NOW()
             )
         '''
 
         params = {
             'user_id': user_id,
             'scene_id': scene_id,
+            'dataset': dataset,
             'path': path,
             'ip': ip
         }
