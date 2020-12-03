@@ -16,7 +16,18 @@ INSERT_USER_SCHEMA = {
     'companyType': {"type": "string", "empty": False, "required": True},
     'activity': {"type": "string", "empty": False, "required": True},
     'addressId': {"type": "integer", "empty": False, "required": False},
-    'address': {"type": "dict", "empty": True, "required": False}
+    'address': {
+        "type": "dict", "empty": True, "required": False,
+        'schema': {
+            'cep': {'type': 'string', "empty": True, "required": False},
+            'street': {'type': 'string', "empty": True, "required": False},
+            'number': {'type': 'string', "empty": True, "required": False},
+            'complement': {'type': 'string', "empty": True, "required": False},
+            'city': {'type': 'string', "empty": True, "required": False},
+            'state': {'type': 'string', "empty": True, "required": False},
+            'country': {'type': 'string', "empty": True, "required": False},
+        }
+    }
 }
 
 

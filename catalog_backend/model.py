@@ -393,18 +393,18 @@ class DatabaseConnection():
 
         self.execute(query, params, is_transaction=True)
 
-    def insert_address(self, userId, cep, street, number, city, state, country):
+    def insert_address(self, userId, cep, street, number, city, state, country, complement, **kwards):
         # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-transaction.html
 
         # print('\n\n DatabaseConnection.insert_address()')
 
         query = '''
             INSERT INTO Address (
-                userId, cep, street, number, city,
-                state, country, addressType, CNPJ_CPF
+                userId, cep, street, number, city, state,
+                country, addressType, CNPJ_CPF, complement
             ) VALUES (
-                :userId, :cep, :street, :number, :city,
-                :state, :country, "", ""
+                :userId, :cep, :street, :number, :city, :state,
+                :country, "", "", :complement
             )
         '''
 
@@ -415,7 +415,8 @@ class DatabaseConnection():
             'number': number,
             'city': city,
             'state': state,
-            'country': country
+            'country': country,
+            'complement': complement
         }
 
         address_id = self.execute(query, params, is_transaction=True)

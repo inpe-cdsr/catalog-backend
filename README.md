@@ -83,13 +83,13 @@ $ docker build -t inpe-cdsr-catalog-backend -f Dockerfile . --no-cache
 Build the Docker image in production mode. If you do not have access to `registry.dpi.inpe.br` registry, then you should change to another one.
 
 ```
-$ docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:1.0.0 -f Dockerfile . --no-cache
+$ docker build -t registry.dpi.inpe.br/inpe-cdsr/catalog-backend:1.0.1 -f Dockerfile . --no-cache
 ```
 
 Push the Docker image to the registry:
 
 ```
-$ docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:1.0.0
+$ docker push registry.dpi.inpe.br/inpe-cdsr/catalog-backend:1.0.1
 ```
 
 The Docker images above are used inside docker compose files. Instructions related to how to run these files can be found inside the [Quick Start](https://github.com/inpe-cdsr/catalog/blob/master/quick-start.md).
